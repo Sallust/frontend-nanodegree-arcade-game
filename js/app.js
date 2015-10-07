@@ -4,7 +4,7 @@ var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.x = 0;
-    this.y = 100;
+    this.y = 225;
 
     this.speed = 3;
 
@@ -32,13 +32,17 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function(){
-    this.x = 150;
-    this.y = 200;
+    this.start();
     this.sprite = 'images/char-boy.png';
 
 }
 
 Player.prototype.update = function(dt) {
+    if (this.y == allEnemies[0].y) {
+        this.start();
+    }
+
+
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -61,6 +65,11 @@ Player.prototype.handleInput = function(input){
         this.y +=15;
 
 };
+
+Player.prototype.start = function(){
+    this.x = 202;
+    this.y = 435;
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
