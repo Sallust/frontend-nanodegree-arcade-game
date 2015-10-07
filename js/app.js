@@ -38,7 +38,7 @@ var Player = function(){
 }
 
 Player.prototype.update = function(dt) {
-    if (this.y == allEnemies[0].y) {
+    if (allEnemies[0].y - 65 < this.y && this.y < allEnemies[0].y + 82 && allEnemies[0].x - 86 < this.x && this.x < allEnemies[0].x + 86) {
         this.start();
     }
 
