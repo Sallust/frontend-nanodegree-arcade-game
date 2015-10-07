@@ -38,6 +38,7 @@ var Player = function(){
 }
 
 Player.prototype.update = function(dt) {
+    //collisions with margins accounted
     if (allEnemies[0].y - 65 < this.y && this.y < allEnemies[0].y + 82 && allEnemies[0].x - 86 < this.x && this.x < allEnemies[0].x + 86) {
         this.start();
     }
@@ -55,13 +56,13 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(input){
-    if (input == 'left')
+    if (input == 'left' && this.x > 0)
         this.x -= 15;
-    if (input == 'right')
+    if (input == 'right' && this.x < 410)
         this.x +=15;
     if (input == 'up')
         this.y -=15;
-    if (input == 'down')
+    if (input == 'down' && this.y < 430)
         this.y +=15;
 
 };
