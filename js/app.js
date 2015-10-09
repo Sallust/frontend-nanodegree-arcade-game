@@ -87,7 +87,7 @@ Player.prototype.shoot = function(){
 var Background = function(){
     this.x = 0;
     this.y = 0;
-    this.image = 'images/lake-background.png';
+    this.image = 'images/lame-stars-bg.png';
     this.speed = 140;
 
 }
@@ -111,28 +111,50 @@ Background.prototype.update = function(dt) {
 };
 
 var Magazine = function(maxBullets){
-    var magazine = [];
+    this.array = [];
     this.cap = maxBullets;
+/*
+    this.init = function() {
+        for (var i = 0; i < cap; i++) {
+        var bullet = new Bullet();
+        magazine[i] = bullet;
+        }
+    };
+
+    this.get = function(x.y) {
+        if (!magazine[cap - 1].inUse) {     //runs when bullet is NOT in use
+        magazine[cap - 1].spawn(x,y);    //calls bullet.spawn
+        magazine.unshift(magazine.pop());         //moves this bullet to the front of the array
+        }
+    };
+
+    this.arm = function() {
+        for (var i = 0; i < cap; i++) {   //for all bullets in magazine
+            if (magazine[i].inUse) {   //if bullet IS in use
+                magazine[i].render();     //draw the bullet
+            }
+        }
+    }; */
 }
 
 Magazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
         var bullet = new Bullet();
-        magazine[i] = bullet;
+        this.array[i] = bullet;
     }
 };
 
 Magazine.prototype.get = function(x,y){
-    if (!magazine[this.cap - 1].inUse) {     //runs when bullet is NOT in use
-        magazine[this.cap - 1].spawn(x,y);    //calls bullet.spawn
-        magazine.unshift(magazine.pop());         //moves this bullet to the front of the array
+    if (!this.array[this.cap - 1].inUse) {     //runs when bullet is NOT in use
+        this.array[this.cap - 1].spawn(x,y);    //calls bullet.spawn
+        this.array.unshift(this.array.pop());         //moves this bullet to the front of the array
     }
 };
 
 Magazine.prototype.arm = function(){
     for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
-        if (magazine[i].inUse) {   //if bullet IS in use
-            magazine[i].render();     //draw the bullet
+        if (this.array[i].inUse) {   //if bullet IS in use
+            this.array[i].render();     //draw the bullet
         }
         //else
             //break;
@@ -141,14 +163,14 @@ Magazine.prototype.arm = function(){
 
 var Bullet = function() {
     this.inUse = false;
-    this.speed = 3;
+    this.speed = 50;
     this.sprite = 'images/bullet.png';
 }
 
 Bullet.prototype.update = function(dt){
     this.y -= this.speed * dt;
     if (this.y <= 0) {    //calls bullet.clear when bullet reaches end of screen
-        this.clear;
+        this.clear();
     }
 }
 

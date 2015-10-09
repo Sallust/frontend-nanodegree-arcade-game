@@ -104,7 +104,9 @@ var Engine = (function(global) {
     }
 
     function updateBullets(dt) {    //********New update Bullets function
-        bullet.update(dt);
+        player.magazine.array.forEach(function(bullet) {
+            bullet.update(dt);
+        });
     }
 
     /* This function initially draws the "game level", it will then call
@@ -191,6 +193,7 @@ var Engine = (function(global) {
     Resources.load([
         'images/bullet.png',
         'images/lake-background.png',
+        'images/lame-stars-bg.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
