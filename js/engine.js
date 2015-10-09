@@ -80,6 +80,8 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
+        updateBackground(dt);  //********Call to update Background function
+        updateBullets(dt); //***Call to update bullet function
         // checkCollisions();
     }
 
@@ -97,6 +99,14 @@ var Engine = (function(global) {
         player.update();
     }
 
+    function updateBackground(dt) {    //********New update Background function
+        background.update(dt);
+    }
+
+    function updateBullets(dt) {    //********New update Bullets function
+        bullet.update(dt);
+    }
+
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -107,6 +117,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+         /*
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -122,7 +133,7 @@ var Engine = (function(global) {
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
-         */
+         */ /*
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
                 /* The drawImage function of the canvas' context element
@@ -131,13 +142,15 @@ var Engine = (function(global) {
                  * We're using our Resources helpers to refer to our images
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
-                 */
+                 */ /*
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
-
+*/
+        renderBackground();
         renderEntities();
+        renderBullets();
+
     }
 
     /* This function is called by the render function and is called on each game
@@ -155,6 +168,14 @@ var Engine = (function(global) {
         player.render();
     }
 
+    function renderBackground() {  //***New Background Render function
+        background.render();
+    }
+
+    function renderBullets() {  //**A Call to arms (get it?)
+        player.magazine.arm();
+    }
+
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
@@ -168,6 +189,8 @@ var Engine = (function(global) {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
+        'images/bullet.png',
+        'images/lake-background.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',

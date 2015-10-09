@@ -1,3 +1,7 @@
+//global variables
+var canvasHeight = 606;
+
+
 // Enemies our player must avoid
 var Enemy = function() {
 
@@ -34,7 +38,8 @@ Enemy.prototype.render = function() {
 var Player = function(){
     this.start();
     this.sprite = 'images/char-boy.png';
-
+    this.magazine = new Magazine(5);   //max bullets set to 5 here
+    this.magazine.init();
 }
 
 Player.prototype.update = function(dt) {
@@ -64,12 +69,103 @@ Player.prototype.handleInput = function(input){
         this.y -=15;
     if (input == 'down' && this.y < 430)
         this.y +=15;
+    if (input == 'space')
+        this.shoot();
 
-};
+
+}
 
 Player.prototype.start = function(){
     this.x = 202;
     this.y = 435;
+}
+
+Player.prototype.shoot = function(){
+    this.magazine.get(this.x + 5, this.y) //passes x and y values of player to magazine to bullet
+}
+
+var Background = function(){
+    this.x = 0;
+    this.y = 0;
+    this.image = 'images/lake-background.png';
+    this.speed = 140;
+
+}
+
+Background.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.image), this.x, this.y);
+    ctx.drawImage(Resources.get(this.image), this.x, this.y - canvasHeight);
+
+
+
+};
+
+Background.prototype.update = function(dt) {
+    // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+
+    this.y += this.speed * dt;
+    if (this.y >= canvasHeight)
+        this.y = 0;
+};
+
+var Magazine = function(maxBullets){
+    var magazine = [];
+    this.cap = maxBullets;
+}
+
+Magazine.prototype.init = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var bullet = new Bullet();
+        magazine[i] = bullet;
+    }
+};
+
+Magazine.prototype.get = function(x,y){
+    if (!magazine[this.cap - 1].inUse) {     //runs when bullet is NOT in use
+        magazine[this.cap - 1].spawn(x,y);    //calls bullet.spawn
+        magazine.unshift(magazine.pop());         //moves this bullet to the front of the array
+    }
+};
+
+Magazine.prototype.arm = function(){
+    for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
+        if (magazine[i].inUse) {   //if bullet IS in use
+            magazine[i].render();     //draw the bullet
+        }
+        //else
+            //break;
+    }
+}
+
+var Bullet = function() {
+    this.inUse = false;
+    this.speed = 3;
+    this.sprite = 'images/bullet.png';
+}
+
+Bullet.prototype.update = function(dt){
+    this.y -= this.speed * dt;
+    if (this.y <= 0) {    //calls bullet.clear when bullet reaches end of screen
+        this.clear;
+    }
+}
+
+Bullet.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Bullet.prototype.spawn = function(x,y){
+    this.x = x;
+    this.y = y;
+    this.inUse = true;
+}
+
+Bullet.prototype.clear = function(){
+    this.x = 0;
+    this.y = 0;
+    this.inUse = false;
 }
 
 // Now instantiate your objects.
@@ -79,6 +175,8 @@ var allEnemies = [new Enemy()];
 
 var player = new Player();
 
+var background = new Background();
+
 
 
 
@@ -87,6 +185,7 @@ var player = new Player();
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
+        32: 'space',
         37: 'left',
         38: 'up',
         39: 'right',
