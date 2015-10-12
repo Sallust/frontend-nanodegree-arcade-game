@@ -10,6 +10,7 @@ var Enemy = function() {
     this.x = 0;
     this.y = 225;
 
+
     this.speed = 3;
 
     // The image/sprite for our enemies, this uses
@@ -95,9 +96,6 @@ var Background = function(){
 Background.prototype.render = function() {
     ctx.drawImage(Resources.get(this.image), this.x, this.y);
     ctx.drawImage(Resources.get(this.image), this.x, this.y - canvasHeight);
-
-
-
 };
 
 Background.prototype.update = function(dt) {
@@ -110,32 +108,35 @@ Background.prototype.update = function(dt) {
         this.y = 0;
 };
 
-var Magazine = function(maxBullets){
+var Pool = function(maxElements){
     this.array = [];
-    this.cap = maxBullets;
-/*
-    this.init = function() {
-        for (var i = 0; i < cap; i++) {
-        var bullet = new Bullet();
-        magazine[i] = bullet;
-        }
-    };
-
-    this.get = function(x.y) {
-        if (!magazine[cap - 1].inUse) {     //runs when bullet is NOT in use
-        magazine[cap - 1].spawn(x,y);    //calls bullet.spawn
-        magazine.unshift(magazine.pop());         //moves this bullet to the front of the array
-        }
-    };
-
-    this.arm = function() {
-        for (var i = 0; i < cap; i++) {   //for all bullets in magazine
-            if (magazine[i].inUse) {   //if bullet IS in use
-                magazine[i].render();     //draw the bullet
-            }
-        }
-    }; */
+    this.cap = maxElements;
 }
+
+Pool.prototype.get = function(x,y){
+    if (!this.array[this.cap - 1].inUse) {     //runs when bullet is NOT in use
+        this.array[this.cap - 1].spawn(x,y);    //calls bullet.spawn
+        this.array.unshift(this.array.pop());         //moves this bullet to the front of the array
+    }
+};
+
+Pool.prototype.arm = function(){
+    for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
+        if (this.array[i].inUse) {   //if bullet IS in use
+            this.array[i].render();     //draw the bullet
+            //this.array[i].checkCollision()
+        }
+        //else
+            //break;
+    }
+}
+
+var Magazine = function(maxElements){
+    Pool.call(this, maxElements);
+}
+
+Magazine.prototype = Object.create(Pool.prototype); //Magazine is subClass of Pool
+Magazine.prototype.constructor = Magazine;
 
 Magazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
@@ -144,22 +145,26 @@ Magazine.prototype.init = function(){
     }
 };
 
-Magazine.prototype.get = function(x,y){
-    if (!this.array[this.cap - 1].inUse) {     //runs when bullet is NOT in use
-        this.array[this.cap - 1].spawn(x,y);    //calls bullet.spawn
-        this.array.unshift(this.array.pop());         //moves this bullet to the front of the array
+var EvilArmy = function(maxElements) {
+    Pool.call(this, maxElements);
+}
+
+EvilArmy.prototype = Object.create(Pool.prototype); //EvilArmy is subClass of Pool
+EvilArmy.prototype.constructor = EvilArmy;
+
+EvilArmy.prototype.init = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var enemy = new Enemy();
+        this.array[i] = enemy;
     }
 };
 
-Magazine.prototype.arm = function(){
-    for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
-        if (this.array[i].inUse) {   //if bullet IS in use
-            this.array[i].render();     //draw the bullet
-        }
-        //else
-            //break;
-    }
-}
+
+
+
+
+
+
 
 var Bullet = function() {
     this.inUse = false;
@@ -190,10 +195,26 @@ Bullet.prototype.clear = function(){
     this.inUse = false;
 }
 
+//Bullet.prototype.collide = function(){
+   // if (this.x < enemy.x + enemy.width  && this.x + this.width  > enemy.x &&
+     //   this.y < enemy.y + enemy.height && this.y + this.height > enemy.y) {};
+//}
+
+/*Bullet.prototype.checkCollision = function(){
+    if (this.collide) {
+        /* enemy dies  */ /*
+        this.inUse = false;
+
+    };
+
+}*/
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var allEnemies = [new Enemy()];
+evilArmy = new EvilArmy(6);
+evilArmy.init();
+var allEnemies = evilArmy.array;
 
 var player = new Player();
 
