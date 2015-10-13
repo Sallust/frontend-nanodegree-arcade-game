@@ -9,6 +9,7 @@ var Enemy = function() {
     // we've provided one for you to get started
     this.x = 0;
     this.y = 225;
+    this.inUse = false;
 
 
     this.speed = 3;
@@ -32,6 +33,12 @@ Enemy.prototype.update = function(dt) {
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
+Enemy.prototype.spawn = function(x,y) {
+    this.x = x;
+    this.y = y;
+    this.inUse = true;
+}
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -159,6 +166,14 @@ EvilArmy.prototype.init = function(){
     }
 };
 
+var makeArmy = function(enlisted) {
+    var x = 0;
+    var y = 60;
+    for (var i = 0; i < enlisted; i++) {
+        evilArmy.get(x,y);
+        x += 50;
+    };
+}
 
 
 
@@ -214,6 +229,8 @@ Bullet.prototype.clear = function(){
 // Place the player object in a variable called player
 evilArmy = new EvilArmy(6);
 evilArmy.init();
+makeArmy(4);
+
 var allEnemies = evilArmy.array;
 
 var player = new Player();

@@ -163,9 +163,7 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
+        renderEnemies();
 
         player.render();
     }
@@ -176,6 +174,10 @@ var Engine = (function(global) {
 
     function renderBullets() {  //**A Call to arms (get it?)
         player.magazine.arm();
+    }
+
+    function renderEnemies() {
+        evilArmy.arm();
     }
 
     /* This function does nothing but it could have been a good place to
