@@ -107,6 +107,9 @@ var Engine = (function(global) {
         player.magazine.array.forEach(function(bullet) {
             bullet.update(dt);
         });
+        enemyMagazine.array.forEach(function(bullet) {
+            bullet.update(dt);
+        });
     }
 
     /* This function initially draws the "game level", it will then call
@@ -174,6 +177,7 @@ var Engine = (function(global) {
 
     function renderBullets() {  //**A Call to arms (get it?)
         player.magazine.arm();
+        enemyMagazine.arm();
     }
 
     function renderEnemies() {
@@ -194,6 +198,7 @@ var Engine = (function(global) {
      */
     Resources.load([
         'images/bullet.png',
+        'images/bullet_enemy.png',
         'images/lake-background.png',
         'images/lame-stars-bg.png',
         'images/stone-block.png',

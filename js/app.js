@@ -27,17 +27,24 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += this.speed * dt;
-};
+    if (Math.random() > .995) {
+        this.spew();
+    };
+}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+}
 
 Enemy.prototype.spawn = function(x,y) {
     this.x = x;
     this.y = y;
     this.inUse = true;
+}
+
+Enemy.prototype.spew = function() {
+    enemyMagazine.get(this.x + 5, this.y) //passes x and y values of enemy to enemyMagazine to bullet
 }
 
 // Now write your own player class
@@ -147,7 +154,7 @@ Magazine.prototype.constructor = Magazine;
 
 Magazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
-        var bullet = new Bullet();
+        var bullet = new TruthBullet();
         this.array[i] = bullet;
     }
 };
@@ -165,6 +172,23 @@ EvilArmy.prototype.init = function(){
         this.array[i] = enemy;
     }
 };
+
+var EnemyMagazine = function(maxElements) {
+    Pool.call(this, maxElements);
+}
+
+EnemyMagazine.prototype = Object.create(Pool.prototype); //EnemyMagazine is subClass of Pool
+EnemyMagazine.prototype.constructor = EnemyMagazine;
+
+EnemyMagazine.prototype.init = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var bullet = new LiesBullet();
+        this.array[i] = bullet;
+    }
+}
+
+
+
 
 var makeArmy = function(enlisted) {
     var x = 0;
@@ -184,15 +208,9 @@ var makeArmy = function(enlisted) {
 var Bullet = function() {
     this.inUse = false;
     this.speed = 50;
-    this.sprite = 'images/bullet.png';
 }
 
-Bullet.prototype.update = function(dt){
-    this.y -= this.speed * dt;
-    if (this.y <= 0) {    //calls bullet.clear when bullet reaches end of screen
-        this.clear();
-    }
-}
+
 
 Bullet.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -209,6 +227,38 @@ Bullet.prototype.clear = function(){
     this.y = 0;
     this.inUse = false;
 }
+
+var TruthBullet = function() {   //type of bullet player shoots
+    Bullet.call(this);
+    this.sprite = 'images/bullet.png';
+}
+
+TruthBullet.prototype = Object.create(Bullet.prototype); //TruthBullet is subClass of Bullet
+TruthBullet.prototype.constructor = TruthBullet;
+
+TruthBullet.prototype.update = function(dt){
+    this.y -= this.speed * dt;
+    if (this.y <= 0) {    //calls bullet.clear when bullet reaches end of screen
+        this.clear();
+    }
+}
+
+var LiesBullet = function() {   //type of bullet player shoots
+    Bullet.call(this);
+    this.sprite = 'images/bullet_enemy.png';
+}
+
+LiesBullet.prototype = Object.create(Bullet.prototype); //LiesBullet is subClass of Bullet
+LiesBullet.prototype.constructor = LiesBullet;
+
+LiesBullet.prototype.update = function(dt){
+    this.y += this.speed * dt;
+    if (this.y >= canvasHeight) {    //calls bullet.clear when bullet reaches end of screen
+        this.clear();
+    }
+}
+
+
 
 //Bullet.prototype.collide = function(){
    // if (this.x < enemy.x + enemy.width  && this.x + this.width  > enemy.x &&
@@ -227,9 +277,14 @@ Bullet.prototype.clear = function(){
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-evilArmy = new EvilArmy(6);
+var evilArmy = new EvilArmy(6);
 evilArmy.init();
 makeArmy(4);
+
+var enemyMagazine = new EnemyMagazine(8);
+enemyMagazine.init();
+
+
 
 var allEnemies = evilArmy.array;
 
