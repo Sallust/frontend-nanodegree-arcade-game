@@ -1,5 +1,6 @@
 //global variables
 var canvasHeight = 606;
+var canvasWidth = 505;
 
 
 // Enemies our player must avoid
@@ -9,10 +10,12 @@ var Enemy = function() {
     // we've provided one for you to get started
     this.x = 0;
     this.y = 225;
+    this.height = 171;
+    this.width = 101;
     this.inUse = false;
 
 
-    this.speed = 3;
+    this.speed = 70;
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -30,6 +33,9 @@ Enemy.prototype.update = function(dt) {
     if (Math.random() > .995) {
         this.spew();
     };
+    if (this.x > canvasWidth - this.width || this.x < 0) {
+        this.speed = -this.speed;
+    }
 }
 
 // Draw the enemy on the screen, required method for game
@@ -47,11 +53,22 @@ Enemy.prototype.spew = function() {
     enemyMagazine.get(this.x + 5, this.y) //passes x and y values of enemy to enemyMagazine to bullet
 }
 
+Enemy.prototype.checkCollision = function() {
+    for (var i = 0; i < player.magazine.cap; i++) {
+        if (this.x < player.magazine.array[i].x + 3  && this.x + this.width  > player.magazine.array[i].x && this.y < player.magazine.array[i].y + 4 && this.y + this.height > player.magazine.array[i].y) {
+            this.inUse = false;
+            player.magazine.array[i].inUse = false;
+        };
+    };
+}
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function(){
     this.start();
+    this.height = 171;
+    this.width = 101;
     this.sprite = 'images/char-boy.png';
     this.magazine = new Magazine(5);   //max bullets set to 5 here
     this.magazine.init();
@@ -62,6 +79,12 @@ Player.prototype.update = function(dt) {
     if (allEnemies[0].y - 65 < this.y && this.y < allEnemies[0].y + 82 && allEnemies[0].x - 86 < this.x && this.x < allEnemies[0].x + 86) {
         this.start();
     }
+    for (var i = 0; i < enemyMagazine.cap; i++) {
+        if (this.x < enemyMagazine.array[i].x + 3  && this.x + this.width  > enemyMagazine.array[i].x && this.y < enemyMagazine.array[i].y + 4 && this.y + this.height > enemyMagazine.array[i].y) {
+            this.start();
+            enemyMagazine.array[i].inUse = false;
+        };
+    };
 
 
     // You should multiply any movement by the dt parameter
@@ -138,7 +161,7 @@ Pool.prototype.arm = function(){
     for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
         if (this.array[i].inUse) {   //if bullet IS in use
             this.array[i].render();     //draw the bullet
-            //this.array[i].checkCollision()
+            this.array[i].checkCollision()
         }
         //else
             //break;
@@ -243,6 +266,11 @@ TruthBullet.prototype.update = function(dt){
     }
 }
 
+TruthBullet.prototype.checkCollision = function() {
+
+
+}
+
 var LiesBullet = function() {   //type of bullet player shoots
     Bullet.call(this);
     this.sprite = 'images/bullet_enemy.png';
@@ -256,6 +284,11 @@ LiesBullet.prototype.update = function(dt){
     if (this.y >= canvasHeight) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
+}
+
+LiesBullet.prototype.checkCollision = function() {
+
+
 }
 
 
