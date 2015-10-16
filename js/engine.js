@@ -155,6 +155,7 @@ var Engine = (function(global) {
         renderBackground();
         renderEntities();
         renderBullets();
+        document.getElementById('score').innerHTML = score;
 
     }
 

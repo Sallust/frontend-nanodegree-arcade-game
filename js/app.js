@@ -1,6 +1,7 @@
 //global variables
 var canvasHeight = 606;
 var canvasWidth = 505;
+var score = 0;
 
 
 // Enemies our player must avoid
@@ -58,6 +59,7 @@ Enemy.prototype.checkCollision = function() {
         if (this.x < player.magazine.array[i].x + 3  && this.x + this.width  > player.magazine.array[i].x && this.y < player.magazine.array[i].y + 4 && this.y + this.height > player.magazine.array[i].y) {
             this.inUse = false;
             player.magazine.array[i].inUse = false;
+            score += 100;
         };
     };
 }
