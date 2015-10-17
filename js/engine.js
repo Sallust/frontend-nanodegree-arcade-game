@@ -201,8 +201,8 @@ var Engine = (function(global) {
     Resources.load([
         'images/bullet.png',
         'images/bullet_enemy.png',
-        'images/lake-background.png',
-        'images/lame-stars-bg.png',
+        'images/july606.jpg',
+        'images/thedonald.jpg',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
