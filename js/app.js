@@ -1,3 +1,8 @@
+inherit = function(subClass,superClass) {
+   subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
+   subClass.prototype.constructor = subClass; // set constructor on prototype
+}
+
 //global variables
 var canvasHeight = 606;
 var canvasWidth = 505;
@@ -60,6 +65,7 @@ Enemy.prototype.checkCollision = function() {
             this.inUse = false;
             player.magazine.array[i].inUse = false;
             score += 100;
+            sounds.explosionPool.get();
         };
     };
 }
@@ -122,6 +128,7 @@ Player.prototype.start = function(){
 
 Player.prototype.shoot = function(){
     this.magazine.get(this.x + 5, this.y) //passes x and y values of player to magazine to bullet
+    sounds.laserPool.get();
 }
 
 var Background = function(){
@@ -174,8 +181,9 @@ var Magazine = function(maxElements){
     Pool.call(this, maxElements);
 }
 
-Magazine.prototype = Object.create(Pool.prototype); //Magazine is subClass of Pool
-Magazine.prototype.constructor = Magazine;
+inherit(Magazine,Pool);
+//Magazine.prototype = Object.create(Pool.prototype); //Magazine is subClass of Pool
+//Magazine.prototype.constructor = Magazine;
 
 Magazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
@@ -188,8 +196,9 @@ var EvilArmy = function(maxElements) {
     Pool.call(this, maxElements);
 }
 
-EvilArmy.prototype = Object.create(Pool.prototype); //EvilArmy is subClass of Pool
-EvilArmy.prototype.constructor = EvilArmy;
+inherit(EvilArmy,Pool);
+//EvilArmy.prototype = Object.create(Pool.prototype); //EvilArmy is subClass of Pool
+//EvilArmy.prototype.constructor = EvilArmy;
 
 EvilArmy.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
@@ -202,8 +211,9 @@ var EnemyMagazine = function(maxElements) {
     Pool.call(this, maxElements);
 }
 
-EnemyMagazine.prototype = Object.create(Pool.prototype); //EnemyMagazine is subClass of Pool
-EnemyMagazine.prototype.constructor = EnemyMagazine;
+inherit(EnemyMagazine,Pool);
+//EnemyMagazine.prototype = Object.create(Pool.prototype); //EnemyMagazine is subClass of Pool
+//EnemyMagazine.prototype.constructor = EnemyMagazine;
 
 EnemyMagazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
@@ -212,6 +222,36 @@ EnemyMagazine.prototype.init = function(){
     }
 }
 
+var SoundPool = function(maxElements){
+    Pool.call(this, maxElements);
+    this.selected = 0; //selected = index value of currently playing sound
+}
+
+inherit(SoundPool,Pool);
+//SoundPool.prototype = Object.create(Pool.prototype); //SoundPool is subClass of Pool
+//SoundPool.prototype.constructor = SoundPool;
+
+SoundPool.prototype.initLaser = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var laser = new Audio('sounds/laser.wav');
+        laser.load();
+        this.array[i] = laser;
+    }
+}
+SoundPool.prototype.initExplosion = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var explosion = new Audio("sounds/explosion.wav");
+        explosion.load();
+        this.array[i] = explosion;
+    }
+};
+
+SoundPool.prototype.get = function() {
+    if (this.array[this.selected].currentTime == 0 || this.array[this.selected].ended) {
+        this.array[this.selected].play();
+        this.selected = (this.selected + 1) % this.cap //loops through sound index
+    }
+}
 
 
 
@@ -258,8 +298,9 @@ var TruthBullet = function() {   //type of bullet player shoots
     this.sprite = 'images/bullet.png';
 }
 
-TruthBullet.prototype = Object.create(Bullet.prototype); //TruthBullet is subClass of Bullet
-TruthBullet.prototype.constructor = TruthBullet;
+inherit(TruthBullet,Bullet);
+//TruthBullet.prototype = Object.create(Bullet.prototype); //TruthBullet is subClass of Bullet
+//TruthBullet.prototype.constructor = TruthBullet;
 
 TruthBullet.prototype.update = function(dt){
     this.y -= this.speed * dt;
@@ -278,8 +319,9 @@ var LiesBullet = function() {   //type of bullet player shoots
     this.sprite = 'images/bullet_enemy.png';
 }
 
-LiesBullet.prototype = Object.create(Bullet.prototype); //LiesBullet is subClass of Bullet
-LiesBullet.prototype.constructor = LiesBullet;
+inherit(LiesBullet,Bullet);
+//LiesBullet.prototype = Object.create(Bullet.prototype); //LiesBullet is subClass of Bullet
+//LiesBullet.prototype.constructor = LiesBullet;
 
 LiesBullet.prototype.update = function(dt){
     this.y += this.speed * dt;
@@ -292,6 +334,25 @@ LiesBullet.prototype.checkCollision = function() {
 
 
 }
+
+
+
+var Sounds = function() { //not really a superclass but organized code logically
+    this.laserPool = new SoundPool(10)      //number of laser sounds
+    this.laserPool.initLaser();
+
+    this.explosionPool = new SoundPool(15)   //# of explosion sounds
+    this.explosionPool.initExplosion();
+
+    this.background = new Audio('sounds/kick_shock.wav');
+    this.background.volume = .09;
+    this.background.loop = true;
+    this.background.load();
+}
+
+var sounds = new Sounds();
+
+
 
 
 
@@ -344,3 +405,5 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+

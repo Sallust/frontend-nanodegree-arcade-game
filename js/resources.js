@@ -8,6 +8,7 @@
     var resourceCache = {};
     var loading = [];
     var readyCallbacks = [];
+    var soundCache = {};
 
     /* This is the publicly accessible image loading function. It accepts
      * an array of strings pointing to image files or a string for a single
@@ -30,6 +31,13 @@
             _load(urlOrArr);
         }
     }
+
+    function loadSound(SoundArray) {
+            SoundArray.forEach(function(url) {
+                _loadSound(url);
+            });
+            console.log(soundCache["sounds/laser.wav"]);
+        }
 
     /* This is our private image loader function, it is
      * called by the public image loader function.
@@ -57,7 +65,7 @@
                  * call all of the onReady() callbacks we have defined.
                  */
                 if(isReady()) {
-                    readyCallbacks.forEach(function(func) { func(); });
+                    checkAudioReadyState();
                 }
             };
 
@@ -70,12 +78,33 @@
         }
     }
 
+    function _loadSound(url) {
+        if(soundCache[url]) {
+            /* If this URL has been previously loaded it will exist within
+             * our resourceCache array. Just return that image rather
+             * re-loading the image.
+             */
+            return soundCache[url];
+        } else {
+            /* This URL has not been previously loaded and is not present
+             * within our cache; we'll need to load this image.
+             */
+            var audio = new Audio(url);
+            audio.load();
+            soundCache[url] = audio;
+        }
+    }
+
     /* This is used by developer's to grab references to images they know
      * have been previously loaded. If an image is cached, this functions
      * the same as calling load() on that URL.
      */
     function get(url) {
         return resourceCache[url];
+    }
+
+    function getSound(url) {
+        return soundCache[url];
     }
 
     /* This function determines if all of the images that have been requested
@@ -99,6 +128,16 @@
         readyCallbacks.push(func);
     }
 
+    function checkAudioReadyState() {
+        if (sounds.background.readyState != 4) {
+            setTimeout(checkAudioReadyState, 1000);
+            return;
+        }
+        readyCallbacks.forEach(function(func) { func(); });
+    }
+
+
+
     /* This object defines the publicly accessible functions available to
      * developers by creating a global Resources object.
      */
@@ -106,6 +145,9 @@
         load: load,
         get: get,
         onReady: onReady,
-        isReady: isReady
+        isReady: isReady,
+        getSound: getSound,
+        loadSound: loadSound
+
     };
 })();

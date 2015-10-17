@@ -67,6 +67,7 @@ var Engine = (function(global) {
         reset();
         lastTime = Date.now();
         main();
+        sounds.background.play();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -208,6 +209,13 @@ var Engine = (function(global) {
         'images/enemy-bug.png',
         'images/char-boy.png'
     ]);
+
+    Resources.loadSound([
+        'sounds/laser.wav',
+        'sounds/explosion.wav'
+    ]);
+
+
     Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window
