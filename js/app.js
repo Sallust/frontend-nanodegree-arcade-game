@@ -18,12 +18,12 @@ var Enemy = function() {
 
     this.inUse = false;
     this.speed = 70;
-    this.sprite = 'images/enemy-bug.png';
+    this.sprite = 'images/thedonald.jpg';
 };
 
 Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
-    if (Math.random() > .995) {
+    if (Math.random() > .995 && this.inUse) {
         this.spew();
     };
     if (this.x > canvasWidth - this.width || this.x < 0) {
@@ -50,7 +50,7 @@ Enemy.prototype.checkCollision = function() {
     for (var i = 0; i < player.magazine.cap; i++) {
         if (this.isColliding(player.magazine.array,i)) {
             this.inUse = false;
-            player.magazine.array[i].inUse = false;
+            player.magazine.array[i].clear();
             score += 100;
             sounds.explosionPool.get();
         };
@@ -124,8 +124,8 @@ Player.prototype.shoot = function(){
 var Background = function(){
     this.x = 0;
     this.y = 0;
-    this.image = 'images/lame-stars-bg.png';
-    this.speed = 140;
+    this.image = 'images/july606.jpg';
+    this.speed = 50;
 }
 
 Background.prototype.render = function() {
@@ -184,8 +184,18 @@ EvilArmy.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
         var enemy = new Enemy();
         this.array[i] = enemy;
-    }
+    };
 }
+
+EvilArmy.prototype.makeArmy = function(enlisted){
+    var x = 0;
+    var y = 60;
+    for (var i = 0; i < enlisted; i++) {
+        evilArmy.get(x,y);
+        x += 50;
+    };
+}
+
 
 var EnemyMagazine = function(maxElements) {
     Pool.call(this, maxElements);
@@ -228,15 +238,6 @@ SoundPool.prototype.get = function() {
         this.array[this.selected].play();
         this.selected = (this.selected + 1) % this.cap //loops through sound index
     }
-}
-
-var makeArmy = function(enlisted) {
-    var x = 0;
-    var y = 60;
-    for (var i = 0; i < enlisted; i++) {
-        evilArmy.get(x,y);
-        x += 50;
-    };
 }
 
 var Bullet = function() {
@@ -314,7 +315,7 @@ var sounds = new Sounds();
 // Place the player object in a variable called player
 var evilArmy = new EvilArmy(6);
 evilArmy.init();
-makeArmy(4);
+evilArmy.makeArmy(4);
 
 var enemyMagazine = new EnemyMagazine(8);
 enemyMagazine.init();
