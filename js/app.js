@@ -11,30 +11,17 @@ var score = 0;
 
 // Enemies our player must avoid
 var Enemy = function() {
-
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
     this.x = 0;
     this.y = 225;
     this.height = 171;
     this.width = 101;
+
     this.inUse = false;
-
-
     this.speed = 70;
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
     this.x += this.speed * dt;
     if (Math.random() > .995) {
         this.spew();
@@ -61,7 +48,7 @@ Enemy.prototype.spew = function() {
 
 Enemy.prototype.checkCollision = function() {
     for (var i = 0; i < player.magazine.cap; i++) {
-        if (this.x < player.magazine.array[i].x + 3  && this.x + this.width  > player.magazine.array[i].x && this.y < player.magazine.array[i].y + 4 && this.y + this.height > player.magazine.array[i].y) {
+        if (this.isColliding(player.magazine.array,i)) {
             this.inUse = false;
             player.magazine.array[i].inUse = false;
             score += 100;
@@ -70,9 +57,13 @@ Enemy.prototype.checkCollision = function() {
     };
 }
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+Enemy.prototype.isColliding = function(array,i) {
+        if (this.x < array[i].x + 3  && this.x + this.width  > array[i].x && this.y < array[i].y + 4 && this.y + this.height > array[i].y) {
+            return true;
+        };
+
+}
+
 var Player = function(){
     this.start();
     this.height = 171;
@@ -88,18 +79,19 @@ Player.prototype.update = function(dt) {
         this.start();
     }
     for (var i = 0; i < enemyMagazine.cap; i++) {
-        if (this.x < enemyMagazine.array[i].x + 3  && this.x + this.width  > enemyMagazine.array[i].x && this.y < enemyMagazine.array[i].y + 4 && this.y + this.height > enemyMagazine.array[i].y) {
+        if (this.isColliding(enemyMagazine.array,i)) {
             this.start();
             enemyMagazine.array[i].inUse = false;
         };
     };
-
-
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-
 };
+
+Player.prototype.isColliding = function(array,i) {
+    if (this.x < array[i].x + 3  && this.x + this.width  > array[i].x && this.y <array[i].y + 4 && this.y + this.height > array[i].y) {
+        return true;
+    }
+};
+
 
 // Draw the enemy on the screen, required method for game
 Player.prototype.render = function() {
@@ -117,8 +109,6 @@ Player.prototype.handleInput = function(input){
         this.y +=15;
     if (input == 'space')
         this.shoot();
-
-
 }
 
 Player.prototype.start = function(){
@@ -136,7 +126,6 @@ var Background = function(){
     this.y = 0;
     this.image = 'images/lame-stars-bg.png';
     this.speed = 140;
-
 }
 
 Background.prototype.render = function() {
@@ -145,16 +134,13 @@ Background.prototype.render = function() {
 };
 
 Background.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-
     this.y += this.speed * dt;
-    if (this.y >= canvasHeight)
+    if (this.y >= canvasHeight) {
         this.y = 0;
+    }
 };
 
-var Pool = function(maxElements){
+var Pool = function(maxElements) {
     this.array = [];
     this.cap = maxElements;
 }
@@ -164,7 +150,7 @@ Pool.prototype.get = function(x,y){
         this.array[this.cap - 1].spawn(x,y);    //calls bullet.spawn
         this.array.unshift(this.array.pop());         //moves this bullet to the front of the array
     }
-};
+}
 
 Pool.prototype.arm = function(){
     for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
@@ -172,8 +158,6 @@ Pool.prototype.arm = function(){
             this.array[i].render();     //draw the bullet
             this.array[i].checkCollision()
         }
-        //else
-            //break;
     }
 }
 
@@ -181,39 +165,33 @@ var Magazine = function(maxElements){
     Pool.call(this, maxElements);
 }
 
-inherit(Magazine,Pool);
-//Magazine.prototype = Object.create(Pool.prototype); //Magazine is subClass of Pool
-//Magazine.prototype.constructor = Magazine;
+inherit(Magazine,Pool);  //Magazine, a pool of TruthBullets is subClass of Pool
 
 Magazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
         var bullet = new TruthBullet();
         this.array[i] = bullet;
     }
-};
+}
 
 var EvilArmy = function(maxElements) {
     Pool.call(this, maxElements);
 }
 
-inherit(EvilArmy,Pool);
-//EvilArmy.prototype = Object.create(Pool.prototype); //EvilArmy is subClass of Pool
-//EvilArmy.prototype.constructor = EvilArmy;
+inherit(EvilArmy,Pool);  //EvilArmy, a pool of Enemies, is subClass of Pool
 
 EvilArmy.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
         var enemy = new Enemy();
         this.array[i] = enemy;
     }
-};
+}
 
 var EnemyMagazine = function(maxElements) {
     Pool.call(this, maxElements);
 }
 
-inherit(EnemyMagazine,Pool);
-//EnemyMagazine.prototype = Object.create(Pool.prototype); //EnemyMagazine is subClass of Pool
-//EnemyMagazine.prototype.constructor = EnemyMagazine;
+inherit(EnemyMagazine,Pool);  //EnemyMagazine, a pool of LiesBullets is subClass of Pool
 
 EnemyMagazine.prototype.init = function(){
     for (var i = 0; i < this.cap; i++) {
@@ -227,9 +205,7 @@ var SoundPool = function(maxElements){
     this.selected = 0; //selected = index value of currently playing sound
 }
 
-inherit(SoundPool,Pool);
-//SoundPool.prototype = Object.create(Pool.prototype); //SoundPool is subClass of Pool
-//SoundPool.prototype.constructor = SoundPool;
+inherit(SoundPool,Pool); //SoundPool, a pool of sounds, is subClass of Pool
 
 SoundPool.prototype.initLaser = function(){
     for (var i = 0; i < this.cap; i++) {
@@ -238,13 +214,14 @@ SoundPool.prototype.initLaser = function(){
         this.array[i] = laser;
     }
 }
+
 SoundPool.prototype.initExplosion = function(){
     for (var i = 0; i < this.cap; i++) {
         var explosion = new Audio("sounds/explosion.wav");
         explosion.load();
         this.array[i] = explosion;
     }
-};
+}
 
 SoundPool.prototype.get = function() {
     if (this.array[this.selected].currentTime == 0 || this.array[this.selected].ended) {
@@ -252,8 +229,6 @@ SoundPool.prototype.get = function() {
         this.selected = (this.selected + 1) % this.cap //loops through sound index
     }
 }
-
-
 
 var makeArmy = function(enlisted) {
     var x = 0;
@@ -264,22 +239,14 @@ var makeArmy = function(enlisted) {
     };
 }
 
-
-
-
-
-
-
 var Bullet = function() {
     this.inUse = false;
     this.speed = 50;
 }
 
-
-
 Bullet.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+}
 
 Bullet.prototype.spawn = function(x,y){
     this.x = x;
@@ -298,9 +265,7 @@ var TruthBullet = function() {   //type of bullet player shoots
     this.sprite = 'images/bullet.png';
 }
 
-inherit(TruthBullet,Bullet);
-//TruthBullet.prototype = Object.create(Bullet.prototype); //TruthBullet is subClass of Bullet
-//TruthBullet.prototype.constructor = TruthBullet;
+inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
 
 TruthBullet.prototype.update = function(dt){
     this.y -= this.speed * dt;
@@ -310,8 +275,6 @@ TruthBullet.prototype.update = function(dt){
 }
 
 TruthBullet.prototype.checkCollision = function() {
-
-
 }
 
 var LiesBullet = function() {   //type of bullet player shoots
@@ -319,9 +282,7 @@ var LiesBullet = function() {   //type of bullet player shoots
     this.sprite = 'images/bullet_enemy.png';
 }
 
-inherit(LiesBullet,Bullet);
-//LiesBullet.prototype = Object.create(Bullet.prototype); //LiesBullet is subClass of Bullet
-//LiesBullet.prototype.constructor = LiesBullet;
+inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
 
 LiesBullet.prototype.update = function(dt){
     this.y += this.speed * dt;
@@ -331,11 +292,7 @@ LiesBullet.prototype.update = function(dt){
 }
 
 LiesBullet.prototype.checkCollision = function() {
-
-
 }
-
-
 
 var Sounds = function() { //not really a superclass but organized code logically
     this.laserPool = new SoundPool(10)      //number of laser sounds
@@ -352,24 +309,6 @@ var Sounds = function() { //not really a superclass but organized code logically
 
 var sounds = new Sounds();
 
-
-
-
-
-//Bullet.prototype.collide = function(){
-   // if (this.x < enemy.x + enemy.width  && this.x + this.width  > enemy.x &&
-     //   this.y < enemy.y + enemy.height && this.y + this.height > enemy.y) {};
-//}
-
-/*Bullet.prototype.checkCollision = function(){
-    if (this.collide) {
-        /* enemy dies  */ /*
-        this.inUse = false;
-
-    };
-
-}*/
-
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -380,17 +319,11 @@ makeArmy(4);
 var enemyMagazine = new EnemyMagazine(8);
 enemyMagazine.init();
 
-
-
 var allEnemies = evilArmy.array;
 
 var player = new Player();
 
 var background = new Background();
-
-
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -405,5 +338,3 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
-
