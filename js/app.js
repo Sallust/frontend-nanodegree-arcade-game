@@ -17,12 +17,16 @@ var Game = function() {
 
 Game.prototype.handleInput = function(input){
     if (input == 'pause' && this.paused === false) {
-        this.score += 50;
-        console.log("sup");
+        this.paused = true;
+        sounds.background.pause();
     }
-    if (input === 'pause' && this.paused) {
+    else if (input == 'pause' && this.paused) {
         this.paused = false;
-    };
+        sounds.background.play();
+    }
+    //if (input === 'pause' && this.paused) {
+       // this.paused = false;
+   // };
     if (input == 'new' && this.over)
         this.restart();
 
