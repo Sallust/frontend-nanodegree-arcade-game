@@ -45,8 +45,15 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
-        render();
+        if (game.over) {
+            gameOver();
+        }
+
+        if (!game.paused && !game.over) {
+            update(dt);
+            render();
+        };
+
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -56,6 +63,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
+
         win.requestAnimationFrame(main);
     }
 
@@ -156,7 +164,8 @@ var Engine = (function(global) {
         renderBackground();
         renderEntities();
         renderBullets();
-        document.getElementById('score').innerHTML = score;
+        document.getElementById('score').innerHTML = game.score;
+        document.getElementById('lives').innerHTML = game.lives;
 
     }
 
@@ -192,6 +201,25 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+    }
+
+    function gameOver() {
+
+        sounds.background.pause();
+        document.getElementById('game-over').style.display = "block";
+
+    }
+
+    function restart() {
+        score = 0;
+        currentLives = 5;
+        evilArmy.init();
+        evilArmy.makeArmy(4);
+        player.start();
+
+
+        document.getElementById('game-over').style.display = "none";
+        init();
     }
 
     /* Go ahead and load all of the images we know we're going to need to

@@ -4,9 +4,43 @@ inherit = function(subClass,superClass) {
 }
 
 //global variables
-var canvasHeight = 606;
-var canvasWidth = 505;
-var score = 0;
+var Game = function() {
+    this.canvasHeight = 606;
+    this.canvasWidth = 505;
+    this.score = 0;
+    this.lives = 5;
+    this.paused = false;
+    this.over = false;
+
+
+}
+
+Game.prototype.handleInput = function(input){
+    if (input == 'pause' && this.paused === false) {
+        this.score += 50;
+        console.log("sup");
+    }
+    if (input === 'pause' && this.paused) {
+        this.paused = false;
+    };
+    if (input == 'new' && this.over)
+        this.restart();
+
+
+}
+
+Game.prototype.restart = function(){
+    this.score = 0;
+    this.lives = 5;
+    evilArmy.init();
+    evilArmy.makeArmy(4);
+    enemyMagazine.init();
+
+    player.start();
+    document.getElementById('game-over').style.display = "none";
+    sounds.background.play();
+    this.over = false;
+}
 
 
 // Enemies our player must avoid
@@ -26,7 +60,7 @@ Enemy.prototype.update = function(dt) {
     if (Math.random() > .995 && this.inUse) {
         this.spew();
     };
-    if (this.x > canvasWidth - this.width || this.x < 0) {
+    if (this.x > game.canvasWidth - this.width || this.x < 0) {
         this.speed = -this.speed;
     }
 }
@@ -51,7 +85,7 @@ Enemy.prototype.checkCollision = function() {
         if (this.isColliding(player.magazine.array,i)) {
             this.inUse = false;
             player.magazine.array[i].clear();
-            score += 100;
+            game.score += 100;
             sounds.explosionPool.get();
         };
     };
@@ -75,13 +109,17 @@ var Player = function(){
 
 Player.prototype.update = function(dt) {
     //collisions with margins accounted
-    if (allEnemies[0].y - 65 < this.y && this.y < allEnemies[0].y + 82 && allEnemies[0].x - 86 < this.x && this.x < allEnemies[0].x + 86) {
-        this.start();
-    }
-    for (var i = 0; i < enemyMagazine.cap; i++) {
+    //if (allEnemies[0].y - 65 < this.y && this.y < allEnemies[0].y + 82 && allEnemies[0].x - 86 < this.x && this.x < allEnemies[0].x + 86) {
+       // this.start();
+    //}
+    for (var i = 0; i < enemyMagazine.cap; i++) {  //for all enemy bullets
         if (this.isColliding(enemyMagazine.array,i)) {
             this.start();
-            enemyMagazine.array[i].inUse = false;
+            enemyMagazine.array[i].inUse = false; //collided bullet disappears
+            game.lives -= 1;
+            if (game.lives == 0) {
+                game.over = true;
+            };
         };
     };
 };
@@ -130,12 +168,12 @@ var Background = function(){
 
 Background.prototype.render = function() {
     ctx.drawImage(Resources.get(this.image), this.x, this.y);
-    ctx.drawImage(Resources.get(this.image), this.x, this.y - canvasHeight);
+    ctx.drawImage(Resources.get(this.image), this.x, this.y - game.canvasHeight);
 };
 
 Background.prototype.update = function(dt) {
     this.y += this.speed * dt;
-    if (this.y >= canvasHeight) {
+    if (this.y >= game.canvasHeight) {
         this.y = 0;
     }
 };
@@ -287,7 +325,7 @@ inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
 
 LiesBullet.prototype.update = function(dt){
     this.y += this.speed * dt;
-    if (this.y >= canvasHeight) {    //calls bullet.clear when bullet reaches end of screen
+    if (this.y >= game.canvasHeight) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
 }
@@ -307,7 +345,7 @@ var Sounds = function() { //not really a superclass but organized code logically
     this.background.loop = true;
     this.background.load();
 }
-
+var game = new Game();
 var sounds = new Sounds();
 
 // Now instantiate your objects.
@@ -334,8 +372,11 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        80: 'pause',
+        78: 'new'
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
+    game.handleInput(allowedKeys[e.keyCode]);
 });
