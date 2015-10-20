@@ -43,16 +43,31 @@ var Enemy = function() {
     this.inUse = false;
     this.speed = 70;
     this.sprite = 'images/christie.jpg';
+    this.justSpewed = false;
+    this.spewCounter = 0;
 };
 
 Enemy.prototype.update = function(dt) {
     this.y += this.speed * dt;
-    if (Math.random() > .995 && this.inUse) {
+    if (Math.random() > .995 && this.inUse && !this.justSpewed) {
         this.spew();
+        this.justSpewed = true;
+        this.spewCounter = 0;
+
+        this.sprite = 'images/christiemad.jpg';
     }
-    if (this.y >= game.canvasHeight - this.height || this.y <= 0) {
+    if (this.y >= game.CANVAS_HEIGHT - this.height || this.y <= 0) {
         this.speed = -this.speed;
     }
+    if (this.justSpewed) {
+        this.spewCounter += 40 * dt ;
+
+    }
+    if (this.spewCounter >= 10) {
+        this.sprite = 'images/christie.jpg';
+        this.justSpewed = false;
+    }
+
 }
 
 // Draw the enemy on the screen, required method for game
@@ -66,14 +81,20 @@ Enemy.prototype.spawn = function(x,y) {
     this.inUse = true;
 }
 
+Enemy.prototype.clear = function() {
+    this.x = game.CANVAS_WIDTH;
+    this.y = 0;
+    this.inUse = false;
+}
+
 Enemy.prototype.spew = function() {
-    enemyMagazine.get(this.x + 5, this.y) //passes x and y values of enemy to enemyMagazine to bullet
+    enemyMagazine.get(this.x + 20, this.y + 5) //passes x and y values of enemy to enemyMagazine to bullet
 }
 
 Enemy.prototype.checkCollision = function() {
     for (var i = 0; i < player.magazine.cap; i++) {
         if (this.isColliding(player.magazine.array,i)) {
-            this.inUse = false;
+            this.clear();
             player.magazine.array[i].clear();
             game.score += 100;
             fancyExplosion(this.x, this.y);
@@ -131,11 +152,11 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(input){
     if (input == 'left' && this.x > 0)
         this.x -= 15;
-    if (input == 'right' && this.x < game.canvasWidth - this.width)
+    if (input == 'right' && this.x < game.CANVAS_WIDTH - this.width)
         this.x +=15;
     if (input == 'up' && this.y > 0)
         this.y -=15;
-    if (input == 'down' && this.y < game.canvasHeight - this.height)
+    if (input == 'down' && this.y < game.CANVAS_HEIGHT - this.height)
         this.y +=15;
     if (input == 'space')
         this.shoot();
@@ -160,12 +181,12 @@ var Background = function(){
 
 Background.prototype.render = function() {
     ctx.drawImage(Resources.get(this.image), this.x, this.y);
-    ctx.drawImage(Resources.get(this.image), this.x, this.y - game.canvasHeight);
+    ctx.drawImage(Resources.get(this.image), this.x, this.y - game.CANVAS_HEIGHT);
 };
 
 Background.prototype.update = function(dt) {
     this.y += this.speed * dt;
-    if (this.y >= game.canvasHeight) {
+    if (this.y >= game.CANVAS_HEIGHT) {
         this.y = 0;
     }
 };
@@ -241,10 +262,15 @@ EnemyMagazine.prototype.init = function(){
 var Bullet = function() {
     this.inUse = false;
     this.speed = 50;
+    this.rotation = 0;
 }
 
 Bullet.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.save();
+    ctx.translate(this.x,this.y);
+    ctx.rotate(this.rotation);
+    ctx.drawImage(Resources.get(this.sprite), -8, -8);
+    ctx.restore();
 }
 
 Bullet.prototype.spawn = function(x,y){
@@ -268,20 +294,22 @@ inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
 
 TruthBullet.prototype.update = function(dt){
     this.x += this.speed * dt;
-    if (this.x >= game.canvasWidth) {    //calls bullet.clear when bullet reaches end of screen
+
+    if (this.x >= game.CANVAS_WIDTH) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
 }
 
 var LiesBullet = function() {   //type of bullet player shoots
     Bullet.call(this);
-    this.sprite = 'images/star_small.png';
+    this.sprite = 'images/redstar.png';
 }
 
 inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
 
 LiesBullet.prototype.update = function(dt){
     this.x -= this.speed * dt;
+    this.rotation -= 5 * dt;
     if (this.x <= 0) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }

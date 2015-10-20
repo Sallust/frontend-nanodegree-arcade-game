@@ -25,8 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = game.canvasWidth = 700;
-    canvas.height = game.canvasHeight = 560;
+    canvas.width = game.CANVAS_WIDTH = 700;
+    canvas.height = game.CANVAS_HEIGHT = 560;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -189,11 +189,7 @@ var Engine = (function(global) {
     }
 
     function renderExplosion() {
-       // particle.forEach(function(particle) {
-         //   particle.draw();
-       // })
         particlesPool.arm();
-
     }
 
     /* This function does nothing but it could have been a good place to
@@ -230,8 +226,9 @@ var Engine = (function(global) {
     Resources.load([
         'images/bullet.png',
         'images/briefcase.png',
-        'images/star_small.png',
+        'images/redstar.png',
         'images/christie.jpg',
+        'images/christiemad.jpg',
         'images/bullet_enemy.png',
         'images/july606.jpg',
         'images/thedonald.jpg',
