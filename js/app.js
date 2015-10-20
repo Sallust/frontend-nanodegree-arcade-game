@@ -5,32 +5,21 @@ inherit = function(subClass,superClass) {
 
 //global variables
 var Game = function() {
-    this.canvasHeight = 606;
-    this.canvasWidth = 505;
     this.score = 0;
     this.lives = 5;
     this.paused = false;
     this.over = false;
-
-
 }
 
 Game.prototype.handleInput = function(input){
     if (input == 'pause' && this.paused === false) {
         this.paused = true;
         sounds.background.pause();
-    }
-    else if (input == 'pause' && this.paused) {
+    } else if (input == 'pause' && this.paused) {
         this.paused = false;
         sounds.background.play();
-    }
-    //if (input === 'pause' && this.paused) {
-       // this.paused = false;
-   // };
-    if (input == 'new' && this.over)
+    } if (input == 'new' && this.over)
         this.restart();
-
-
 }
 
 Game.prototype.restart = function(){
@@ -39,32 +28,29 @@ Game.prototype.restart = function(){
     evilArmy.init();
     evilArmy.makeArmy(4);
     enemyMagazine.init();
-
     player.start();
     document.getElementById('game-over').style.display = "none";
     sounds.background.play();
     this.over = false;
 }
 
-
 // Enemies our player must avoid
 var Enemy = function() {
-    this.x = 0;
-    this.y = 225;
-    this.height = 171;
-    this.width = 101;
-
+    this.x = 500;
+    this.y = 0;
+    this.height = 50;
+    this.width = 50;
     this.inUse = false;
     this.speed = 70;
-    this.sprite = 'images/thedonald.jpg';
+    this.sprite = 'images/christie.jpg';
 };
 
 Enemy.prototype.update = function(dt) {
-    this.x += this.speed * dt;
+    this.y += this.speed * dt;
     if (Math.random() > .995 && this.inUse) {
         this.spew();
-    };
-    if (this.x > game.canvasWidth - this.width || this.x < 0) {
+    }
+    if (this.y >= game.canvasHeight - this.height || this.y <= 0) {
         this.speed = -this.speed;
     }
 }
@@ -90,6 +76,7 @@ Enemy.prototype.checkCollision = function() {
             this.inUse = false;
             player.magazine.array[i].clear();
             game.score += 100;
+            fancyExplosion(this.x, this.y);
             sounds.explosionPool.get();
         };
     };
@@ -118,8 +105,9 @@ Player.prototype.update = function(dt) {
     //}
     for (var i = 0; i < enemyMagazine.cap; i++) {  //for all enemy bullets
         if (this.isColliding(enemyMagazine.array,i)) {
+            fancyExplosion(this.x,this.y);
             this.start();
-            enemyMagazine.array[i].inUse = false; //collided bullet disappears
+            enemyMagazine.array[i].clear(); //collided bullet gets cleared
             game.lives -= 1;
             if (game.lives == 0) {
                 game.over = true;
@@ -143,19 +131,19 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(input){
     if (input == 'left' && this.x > 0)
         this.x -= 15;
-    if (input == 'right' && this.x < 410)
+    if (input == 'right' && this.x < game.canvasWidth - this.width)
         this.x +=15;
-    if (input == 'up')
+    if (input == 'up' && this.y > 0)
         this.y -=15;
-    if (input == 'down' && this.y < 430)
+    if (input == 'down' && this.y < game.canvasHeight - this.height)
         this.y +=15;
     if (input == 'space')
         this.shoot();
 }
 
 Player.prototype.start = function(){
-    this.x = 202;
-    this.y = 435;
+    this.x = 10;
+    this.y = 280
 }
 
 Player.prototype.shoot = function(){
@@ -187,9 +175,9 @@ var Pool = function(maxElements) {
     this.cap = maxElements;
 }
 
-Pool.prototype.get = function(x,y){
+Pool.prototype.get = function(x,y,angle){
     if (!this.array[this.cap - 1].inUse) {     //runs when bullet is NOT in use
-        this.array[this.cap - 1].spawn(x,y);    //calls bullet.spawn
+        this.array[this.cap - 1].spawn(x,y,angle);    //calls bullet.spawn
         this.array.unshift(this.array.pop());         //moves this bullet to the front of the array
     }
 }
@@ -198,7 +186,6 @@ Pool.prototype.arm = function(){
     for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
         if (this.array[i].inUse) {   //if bullet IS in use
             this.array[i].render();     //draw the bullet
-            this.array[i].checkCollision()
         }
     }
 }
@@ -230,14 +217,13 @@ EvilArmy.prototype.init = function(){
 }
 
 EvilArmy.prototype.makeArmy = function(enlisted){
-    var x = 0;
-    var y = 60;
+    var x = 500;
+    var y = 0;
     for (var i = 0; i < enlisted; i++) {
         evilArmy.get(x,y);
-        x += 50;
+        y += 50;
     };
 }
-
 
 var EnemyMagazine = function(maxElements) {
     Pool.call(this, maxElements);
@@ -250,6 +236,68 @@ EnemyMagazine.prototype.init = function(){
         var bullet = new LiesBullet();
         this.array[i] = bullet;
     }
+}
+
+var Bullet = function() {
+    this.inUse = false;
+    this.speed = 50;
+}
+
+Bullet.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+Bullet.prototype.spawn = function(x,y){
+    this.x = x;
+    this.y = y;
+    this.inUse = true;
+}
+
+Bullet.prototype.clear = function(){
+    this.x = 0;
+    this.y = 0;
+    this.inUse = false;
+}
+
+var TruthBullet = function() {   //type of bullet player shoots
+    Bullet.call(this);
+    this.sprite = 'images/briefcase.png';
+}
+
+inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
+
+TruthBullet.prototype.update = function(dt){
+    this.x += this.speed * dt;
+    if (this.x >= game.canvasWidth) {    //calls bullet.clear when bullet reaches end of screen
+        this.clear();
+    }
+}
+
+var LiesBullet = function() {   //type of bullet player shoots
+    Bullet.call(this);
+    this.sprite = 'images/star_small.png';
+}
+
+inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
+
+LiesBullet.prototype.update = function(dt){
+    this.x -= this.speed * dt;
+    if (this.x <= 0) {    //calls bullet.clear when bullet reaches end of screen
+        this.clear();
+    }
+}
+
+var Sounds = function() { //not really a superclass but organized code logically
+    this.laserPool = new SoundPool(10)      //number of laser sounds
+    this.laserPool.initLaser();
+
+    this.explosionPool = new SoundPool(15)   //# of explosion sounds
+    this.explosionPool.initExplosion();
+
+    this.background = new Audio('sounds/kick_shock.wav');
+    this.background.volume = .09;
+    this.background.loop = true;
+    this.background.load();
 }
 
 var SoundPool = function(maxElements){
@@ -282,73 +330,103 @@ SoundPool.prototype.get = function() {
     }
 }
 
-var Bullet = function() {
-    this.inUse = false;
-    this.speed = 50;
-}
-
-Bullet.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
-
-Bullet.prototype.spawn = function(x,y){
-    this.x = x;
-    this.y = y;
-    this.inUse = true;
-}
-
-Bullet.prototype.clear = function(){
+var Particle = function() {
+    this.scale = 1;
     this.x = 0;
     this.y = 0;
+    this.radius = 20;
+    this.radius2 = this.radius * 2.4; //good ratio for flag-like star
+    this.velocityX = 0;
+    this.velocityY = 0;
+    this.scaleSpeed = 0.5;
     this.inUse = false;
+    this.color = this.pickColor();
+    this.blinking = Math.random();
 }
 
-var TruthBullet = function() {   //type of bullet player shoots
-    Bullet.call(this);
-    this.sprite = 'images/bullet.png';
+Particle.prototype.spawn = function(x,y,angle){
+    this.inUse = true;
+    this.radius = 10 + Math.random() * 20;
+    this.speed = 60 + Math.random() * 150;
+    this.scale = 1;
+    this.scaleSpeed = 1 + Math.random() * 3;
+    this.x = x;
+    this.y = y;
+    this.angle = angle;
+
+    //velocity is rotated by angle
+    this.velocityX = this.speed * Math.cos(angle * Math.PI / 180);
+    this.velocityY = this.speed * Math.sin(angle * Math.PI / 180);
+}
+Particle.prototype.pickColor = function() {
+    if (Math.random() < 0.33) {
+        return '#E0162B'; //old Glory Red
+    } else if (Math.random() < 0.66) {
+        return '#FFF';
+    } else
+        return '#0052A5'; //Old Glory Blue
 }
 
-inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
+Particle.prototype.update = function(dt) {
+    if (this.inUse) {
+        this.scale -= this.scaleSpeed * dt;
+        this.x += this.velocityX * dt;
+        this.y += this.velocityY * dt;
+    }
+    if (this.scale <= 0) {
+        this.scale = 0;
+        this.inUse = false;
+    };
+}
 
-TruthBullet.prototype.update = function(dt){
-    this.y -= this.speed * dt;
-    if (this.y <= 0) {    //calls bullet.clear when bullet reaches end of screen
-        this.clear();
+Particle.prototype.render = function() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.scale, this.scale);
+    var x,y;
+
+    ctx.fillStyle = this.blinking < 0.2 ? this.pickColor() : this.color; //fillStyle set to rotate through colors (blinking) or set to solid given color
+    ctx.beginPath();
+    for (var rot = Math.PI/2*3; rot < 11; rot += Math.PI/5) { //rot < 11 since 11 roughly equals 7pi/2
+        x = Math.cos(rot) * this.radius;
+        y = Math.sin(rot) * this.radius;
+        ctx.lineTo(x, y);
+        rot += Math.PI/5;
+        x = Math.cos(rot) * this.radius2;
+        y = Math.sin(rot) * this.radius2;
+        ctx.lineTo(x, y);
+    }
+    ctx.lineTo(0, -this.radius);
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
+}
+
+var fancyExplosion = function(x,y) {
+    for (var angle = 0; angle<360; angle += 10) {
+        particlesPool.get (x, y, angle);
     }
 }
 
-TruthBullet.prototype.checkCollision = function() {
+var ParticlesPool = function(maxElements){
+    Pool.call(this, maxElements);
 }
 
-var LiesBullet = function() {   //type of bullet player shoots
-    Bullet.call(this);
-    this.sprite = 'images/bullet_enemy.png';
-}
+inherit(ParticlesPool,Pool); //ParticlesPool, a pool of particles, is subClass of Pool
 
-inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
-
-LiesBullet.prototype.update = function(dt){
-    this.y += this.speed * dt;
-    if (this.y >= game.canvasHeight) {    //calls bullet.clear when bullet reaches end of screen
-        this.clear();
+ParticlesPool.prototype.init = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var particle = new Particle();
+        this.array[i] = particle;
     }
 }
 
-LiesBullet.prototype.checkCollision = function() {
-}
+var particlesPool = new ParticlesPool(100);
+particlesPool.init();
 
-var Sounds = function() { //not really a superclass but organized code logically
-    this.laserPool = new SoundPool(10)      //number of laser sounds
-    this.laserPool.initLaser();
 
-    this.explosionPool = new SoundPool(15)   //# of explosion sounds
-    this.explosionPool.initExplosion();
 
-    this.background = new Audio('sounds/kick_shock.wav');
-    this.background.volume = .09;
-    this.background.loop = true;
-    this.background.load();
-}
+
 var game = new Game();
 var sounds = new Sounds();
 
