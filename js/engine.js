@@ -111,7 +111,10 @@ var Engine = (function(global) {
     }
 
     function updateBackground(dt) {    //********New update Background function
-        background.update(dt);
+        cloudsBackground.update(dt);
+        monumentsBackground.update(dt);
+        grassBackground.update(dt);
+
     }
 
     function updateBullets(dt) {    //********New update Bullets function
@@ -176,7 +179,10 @@ var Engine = (function(global) {
     }
 
     function renderBackground() {  //***New Background Render function
-        background.render();
+        cloudsBackground.render();
+        monumentsBackground.render();
+        grassBackground.render();
+
     }
 
     function renderBullets() {  //**A Call to arms (get it?)
@@ -235,7 +241,10 @@ var Engine = (function(global) {
         'images/thedonald.jpg',
         'images/lake-background.png',
         'images/christiespriteboard.png',
-        'images/grass-block.png',
+        'images/clouds2.png',
+        'images/grass.png',
+        'images/dcmonuments.png',
+
         'images/enemy-bug.png',
         'images/char-boy.png'
     ]);

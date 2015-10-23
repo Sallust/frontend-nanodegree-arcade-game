@@ -136,7 +136,7 @@ Player.prototype.update = function(dt) {
             fancyExplosion(this.x,this.y);
             this.start();
             enemyMagazine.array[i].clear(); //collided bullet gets cleared
-            game.lives -= 1;
+            //game.lives -= 1;
             if (game.lives == 0) {
                 game.over = true;
             };
@@ -184,24 +184,28 @@ Player.prototype.shoot = function(){
     sounds.laserPool.get();
 }
 
-var Background = function(){
+var Background = function(imgSrc,speed,width,height){ //previous speed was 50
     this.x = 0;
     this.y = 0;
-    this.image = 'images/lake-background.png';
-    this.speed = 50;
+    this.image = imgSrc;
+    this.speed = speed;
+    this.width = width;
+    this.height = height;
 }
 
 Background.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.image), this.x, this.y);
-    ctx.drawImage(Resources.get(this.image), this.x, this.y - game.CANVAS_HEIGHT);
+    ctx.drawImage(Resources.get(this.image), this.x, game.CANVAS_HEIGHT - this.height);
+    ctx.drawImage(Resources.get(this.image), this.x + this.width, game.CANVAS_HEIGHT - this.height);
 };
 
 Background.prototype.update = function(dt) {
-    this.y += this.speed * dt;
-    if (this.y >= game.CANVAS_HEIGHT) {
-        this.y = 0;
+    this.x -= this.speed * dt;
+    if (this.x <= -this.width) {
+        this.x = 0;
     }
-};
+}
+
+
 
 var Pool = function(maxElements) {
     this.array = [];
@@ -464,6 +468,10 @@ ParticlesPool.prototype.init = function(){
 var particlesPool = new ParticlesPool(100);
 particlesPool.init();
 
+var cloudsBackground = new Background('images/clouds2.png', 100, 700, 560);
+var monumentsBackground = new Background('images/dcmonuments.png',200, 2100, 560);
+var grassBackground = new Background('images/grass.png', 400, 700, 100);
+
 
 
 
@@ -483,8 +491,6 @@ enemyMagazine.init();
 var allEnemies = evilArmy.array;
 
 var player = new Player();
-
-var background = new Background();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
