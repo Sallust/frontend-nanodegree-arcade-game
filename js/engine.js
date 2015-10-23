@@ -234,19 +234,10 @@ var Engine = (function(global) {
         'images/trumpspriteboard.png',
         'images/briefcase.png',
         'images/redstar.png',
-        'images/christie.jpg',
-        'images/christiemad.jpg',
-        'images/bullet_enemy.png',
-        'images/july606.jpg',
-        'images/thedonald.jpg',
-        'images/lake-background.png',
         'images/christiespriteboard.png',
         'images/clouds2.png',
         'images/grass.png',
-        'images/dcmonuments.png',
-
-        'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/dcmonuments.png'
     ]);
 
     Resources.loadSound([
