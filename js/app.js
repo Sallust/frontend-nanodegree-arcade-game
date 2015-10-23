@@ -6,9 +6,10 @@ inherit = function(subClass,superClass) {
 //global variables
 var Game = function() {
     this.score = 0;
-    this.lives = 5;
+    this.lives = 10;
     this.paused = false;
     this.over = false;
+    this.win = false;
 }
 
 Game.prototype.handleInput = function(input){
@@ -26,7 +27,7 @@ Game.prototype.restart = function(){
     this.score = 0;
     this.lives = 5;
     evilArmy.init();
-    evilArmy.makeArmy(4);
+    evilArmy.makeArmy(7);
     enemyMagazine.init();
     player.start();
     document.getElementById('game-over').style.display = "none";
@@ -41,7 +42,8 @@ var Enemy = function() {
     this.height = 100;
     this.width = 100;
     this.inUse = false;
-    this.speed = 70;
+    this.Xspeed = 40 + Math.random() * 40;
+    this.Yspeed = 40 + Math.random() * 40;
     this.sprite = 'images/christiespriteboard.png';
     this.justSpewed = false;
     this.spewCounter = 0;
@@ -49,7 +51,8 @@ var Enemy = function() {
 };
 
 Enemy.prototype.update = function(dt) {
-    this.y += this.speed * dt;
+    this.y += this.Yspeed * dt;
+    this.x += this.Xspeed * dt;
     if (Math.random() > .995 && this.inUse && !this.justSpewed) {
         this.spew();
         this.justSpewed = true;
@@ -58,8 +61,12 @@ Enemy.prototype.update = function(dt) {
        // this.sprite = 'images/christiemad.jpg';
     }
     if (this.y >= game.CANVAS_HEIGHT - this.height || this.y <= 0) {
-        this.speed = -this.speed;
+        this.Yspeed = -this.Yspeed;
     }
+    if (this.x >= game.CANVAS_WIDTH - this.width || this.x < 360 ) {
+        this.Xspeed = -this.Xspeed;
+    }
+
     if (this.justSpewed) {
         this.spewCounter += 40 * dt ;
 
@@ -122,7 +129,7 @@ var Player = function(){
     this.height = 140;
     this.width = 250;
     this.sprite = 'images/trumpspriteboard.png';
-    this.magazine = new Magazine(5);   //max bullets set to 5 here
+    this.magazine = new Magazine(20);   //max bullets set to 5 here
     this.magazine.init();
     this.frameIndex = 0;
 }
@@ -137,7 +144,7 @@ Player.prototype.update = function(dt) {
             fancyExplosion(this.x + 180,this.y + 75);
             this.start();
             enemyMagazine.array[i].clear(); //collided bullet gets cleared
-            //game.lives -= 1;
+            game.lives -= 1;
             if (game.lives == 0) {
                 game.over = true;
             };
@@ -259,7 +266,11 @@ EvilArmy.prototype.makeArmy = function(enlisted){
     var y = 0;
     for (var i = 0; i < enlisted; i++) {
         evilArmy.get(x,y);
-        y += 50;
+        y += 75;
+       // for (var j = 0; j < 2; j++) {
+          //  evilArmy.get(x,y);
+          //  x += 100;
+       // }
     };
 }
 
@@ -278,7 +289,7 @@ EnemyMagazine.prototype.init = function(){
 
 var Bullet = function() {
     this.inUse = false;
-    this.speed = 50;
+    this.speed = 100;
     this.rotation = 0;
 }
 
@@ -482,11 +493,11 @@ var sounds = new Sounds();
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var evilArmy = new EvilArmy(6);
+var evilArmy = new EvilArmy(7);
 evilArmy.init();
-evilArmy.makeArmy(4);
+evilArmy.makeArmy(7);
 
-var enemyMagazine = new EnemyMagazine(8);
+var enemyMagazine = new EnemyMagazine(10);
 enemyMagazine.init();
 
 var allEnemies = evilArmy.array;
