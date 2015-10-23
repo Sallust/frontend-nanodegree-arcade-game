@@ -225,6 +225,7 @@ var Engine = (function(global) {
      */
     Resources.load([
         'images/bullet.png',
+        'images/trumpspriteboard.png',
         'images/briefcase.png',
         'images/redstar.png',
         'images/christie.jpg',
@@ -232,8 +233,8 @@ var Engine = (function(global) {
         'images/bullet_enemy.png',
         'images/july606.jpg',
         'images/thedonald.jpg',
-        'images/stone-block.png',
-        'images/water-block.png',
+        'images/lake-background.png',
+        'images/christiespriteboard.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png'

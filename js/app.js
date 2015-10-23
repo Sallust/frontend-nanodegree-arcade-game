@@ -42,9 +42,10 @@ var Enemy = function() {
     this.width = 50;
     this.inUse = false;
     this.speed = 70;
-    this.sprite = 'images/christie.jpg';
+    this.sprite = 'images/christiespriteboard.png';
     this.justSpewed = false;
     this.spewCounter = 0;
+    this.frameIndex = 0;
 };
 
 Enemy.prototype.update = function(dt) {
@@ -54,7 +55,7 @@ Enemy.prototype.update = function(dt) {
         this.justSpewed = true;
         this.spewCounter = 0;
 
-        this.sprite = 'images/christiemad.jpg';
+       // this.sprite = 'images/christiemad.jpg';
     }
     if (this.y >= game.CANVAS_HEIGHT - this.height || this.y <= 0) {
         this.speed = -this.speed;
@@ -64,7 +65,7 @@ Enemy.prototype.update = function(dt) {
 
     }
     if (this.spewCounter >= 10) {
-        this.sprite = 'images/christie.jpg';
+       // this.sprite = 'images/christie.jpg';
         this.justSpewed = false;
     }
 
@@ -72,7 +73,12 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+     if (this.frameIndex >= 4) {
+            this.frameIndex = 0;
+        };
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 100, 102);
+    this.frameIndex += 0.2;
+
 }
 
 Enemy.prototype.spawn = function(x,y) {
@@ -114,9 +120,10 @@ var Player = function(){
     this.start();
     this.height = 171;
     this.width = 101;
-    this.sprite = 'images/char-boy.png';
+    this.sprite = 'images/trumpspriteboard.png';
     this.magazine = new Magazine(5);   //max bullets set to 5 here
     this.magazine.init();
+    this.frameIndex = 0;
 }
 
 Player.prototype.update = function(dt) {
@@ -146,7 +153,12 @@ Player.prototype.isColliding = function(array,i) {
 
 // Draw the enemy on the screen, required method for game
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (this.frameIndex >= 4) {
+            this.frameIndex = 0;
+        };
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 256, 140);
+    this.frameIndex += 1/2;
+
 };
 
 Player.prototype.handleInput = function(input){
@@ -175,7 +187,7 @@ Player.prototype.shoot = function(){
 var Background = function(){
     this.x = 0;
     this.y = 0;
-    this.image = 'images/july606.jpg';
+    this.image = 'images/lake-background.png';
     this.speed = 50;
 }
 
