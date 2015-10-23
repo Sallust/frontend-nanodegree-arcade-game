@@ -38,8 +38,8 @@ Game.prototype.restart = function(){
 var Enemy = function() {
     this.x = 500;
     this.y = 0;
-    this.height = 50;
-    this.width = 50;
+    this.height = 100;
+    this.width = 100;
     this.inUse = false;
     this.speed = 70;
     this.sprite = 'images/christiespriteboard.png';
@@ -100,10 +100,11 @@ Enemy.prototype.spew = function() {
 Enemy.prototype.checkCollision = function() {
     for (var i = 0; i < player.magazine.cap; i++) {
         if (this.isColliding(player.magazine.array,i)) {
+            fancyExplosion(this.x + 50, this.y + 50);
             this.clear();
             player.magazine.array[i].clear();
             game.score += 100;
-            fancyExplosion(this.x, this.y);
+
             sounds.explosionPool.get();
         };
     };
@@ -133,7 +134,7 @@ Player.prototype.update = function(dt) {
     //}
     for (var i = 0; i < enemyMagazine.cap; i++) {  //for all enemy bullets
         if (this.isColliding(enemyMagazine.array,i)) {
-            fancyExplosion(this.x,this.y);
+            fancyExplosion(this.x + 180,this.y + 75);
             this.start();
             enemyMagazine.array[i].clear(); //collided bullet gets cleared
             //game.lives -= 1;
