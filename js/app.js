@@ -118,8 +118,8 @@ Enemy.prototype.isColliding = function(array,i) {
 
 var Player = function(){
     this.start();
-    this.height = 171;
-    this.width = 101;
+    this.height = 140;
+    this.width = 250;
     this.sprite = 'images/trumpspriteboard.png';
     this.magazine = new Magazine(5);   //max bullets set to 5 here
     this.magazine.init();
@@ -180,7 +180,7 @@ Player.prototype.start = function(){
 }
 
 Player.prototype.shoot = function(){
-    this.magazine.get(this.x + 5, this.y) //passes x and y values of player to magazine to bullet
+    this.magazine.get(this.x + 232, this.y + 128) //passes x and y values of player to magazine to bullet
     sounds.laserPool.get();
 }
 
