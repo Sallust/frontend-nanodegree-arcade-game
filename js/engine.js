@@ -51,8 +51,11 @@ var Engine = (function(global) {
         if (game.over) {
             gameOver();
         }
+        if (game.win) {
+            gameWin();
+        }
 
-        if (!game.paused && !game.over && !game.win) {
+        if (!game.paused && !game.over) {
             update(dt);
             render();
         };
@@ -216,6 +219,16 @@ var Engine = (function(global) {
 
     }
 
+    function gameWin() {
+        sounds.background.pause();
+        document.getElementById('game-win').style.display = "block";
+        for (var i = 0; i < 11; i ++) {
+            fancyExplosion(Math.random() * game.CANVAS_WIDTH, Math.random() * game.CANVAS_HEIGHT);
+        }
+      
+
+    }
+
     function restart() {
         score = 0;
         currentLives = 5;
@@ -240,6 +253,7 @@ var Engine = (function(global) {
         'images/christiespriteboard.png',
         'images/clouds2.png',
         'images/grass.png',
+        'images/trumpbutton.png',
         'images/dcmonuments.png'
     ]);
 

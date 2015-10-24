@@ -6,7 +6,7 @@ inherit = function(subClass,superClass) {
 //global variables
 var Game = function() {
     this.score = 0;
-    this.lives = 10;
+    this.lives = 7;
     this.paused = false;
     this.over = false;
     this.win = false;
@@ -31,9 +31,12 @@ Game.prototype.restart = function(){
     enemyMagazine.init();
     player.start();
     document.getElementById('game-over').style.display = "none";
+    document.getElementById('game-win').style.display = "none";
     sounds.background.play();
     this.over = false;
+    this.win = false;
 }
+
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -129,6 +132,7 @@ var Player = function(){
     this.height = 140;
     this.width = 250;
     this.sprite = 'images/trumpspriteboard.png';
+    this.lifeSprite = 'images/trumpbutton.png';
     this.magazine = new Magazine(20);   //max bullets set to 5 here
     this.magazine.init();
     this.frameIndex = 0;
@@ -166,6 +170,10 @@ Player.prototype.render = function() {
         };
     ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 256, 140);
     this.frameIndex += 1/2;
+    for (var i = 0; i < game.lives; i++) {
+        ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50)
+    }
+
 
 };
 
@@ -511,7 +519,7 @@ var sounds = new Sounds();
 // Place the player object in a variable called player
 var evilArmy = new EvilArmy(7);
 evilArmy.init();
-evilArmy.makeArmy(7);
+evilArmy.makeArmy(3);
 
 var enemyMagazine = new EnemyMagazine(5);
 enemyMagazine.init();
