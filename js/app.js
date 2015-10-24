@@ -101,7 +101,7 @@ Enemy.prototype.clear = function() {
 }
 
 Enemy.prototype.spew = function() {
-    enemyMagazine.get(this.x + 20, this.y + 5) //passes x and y values of enemy to enemyMagazine to bullet
+    enemyMagazine.get(this.x + 20, this.y + 5, this.y - player.y) //passes x and y values of enemy to enemyMagazine to bullet
 }
 
 Enemy.prototype.checkCollision = function() {
@@ -274,6 +274,13 @@ EvilArmy.prototype.makeArmy = function(enlisted){
     };
 }
 
+EvilArmy.prototype.poolStatus = function() {
+    function isInUse (element, index, array) {
+        return !element.inUse
+    }
+    return this.array.every(isInUse)
+}
+
 var EnemyMagazine = function(maxElements) {
     Pool.call(this, maxElements);
 }
@@ -289,8 +296,9 @@ EnemyMagazine.prototype.init = function(){
 
 var Bullet = function() {
     this.inUse = false;
-    this.speed = 100;
+    this.speed = 75;
     this.rotation = 0;
+    this.yspeed = 0;
 }
 
 Bullet.prototype.render = function() {
@@ -337,10 +345,18 @@ inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
 
 LiesBullet.prototype.update = function(dt){
     this.x -= this.speed * dt;
-    this.rotation -= 5 * dt;
+    this.y -= (this.y - player.y) * dt * 0.25
+    this.rotation -= 15 * dt;
     if (this.x <= 0) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
+}
+
+LiesBullet.prototype.spawn = function(x,y,yspeed){
+    this.x = x;
+    this.y = y;
+    //this.yspeed = yspeed;
+    this.inUse = true;
 }
 
 var Sounds = function() { //not really a superclass but organized code logically
@@ -497,7 +513,7 @@ var evilArmy = new EvilArmy(7);
 evilArmy.init();
 evilArmy.makeArmy(7);
 
-var enemyMagazine = new EnemyMagazine(10);
+var enemyMagazine = new EnemyMagazine(5);
 enemyMagazine.init();
 
 var allEnemies = evilArmy.array;

@@ -45,11 +45,14 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+        if (evilArmy.poolStatus()) {
+            game.win = true;
+        }
         if (game.over) {
             gameOver();
         }
 
-        if (!game.paused && !game.over) {
+        if (!game.paused && !game.over && !game.win) {
             update(dt);
             render();
         };
