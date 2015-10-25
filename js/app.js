@@ -183,13 +183,13 @@ Player.prototype.render = function() {
 
 Player.prototype.handleInput = function(input){
     if (input == 'left' && this.x > 0)
-        this.x -= 15;
+        this.x -= 30;
     if (input == 'right' && this.x < game.CANVAS_WIDTH - this.width)
-        this.x +=15;
+        this.x +=30;
     if (input == 'up' && this.y > 0)
-        this.y -=15;
+        this.y -=30;
     if (input == 'down' && this.y < game.CANVAS_HEIGHT - this.height)
-        this.y +=15;
+        this.y +=30;
     if (input == 'space')
         this.shoot();
 }
@@ -336,6 +336,7 @@ Bullet.prototype.clear = function(){
 var TruthBullet = function() {   //type of bullet player shoots
     Bullet.call(this);
     this.sprite = 'images/briefcase.png';
+    this.speed = 100;
 }
 
 inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
