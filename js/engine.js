@@ -259,7 +259,8 @@ var Engine = (function(global) {
 
     Resources.loadSound([
         'sounds/laser.wav',
-        'sounds/explosion.wav'
+        'sounds/explosion.wav',
+        'sounds/youre_fired.wav'
     ]);
 
 

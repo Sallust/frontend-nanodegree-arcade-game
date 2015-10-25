@@ -114,8 +114,9 @@ Enemy.prototype.checkCollision = function() {
             this.clear();
             player.magazine.array[i].clear();
             game.score += 100;
+            sounds.terminationPool.get();
 
-            sounds.explosionPool.get();
+            
         };
     };
 }
@@ -146,6 +147,7 @@ Player.prototype.update = function(dt) {
     for (var i = 0; i < enemyMagazine.cap; i++) {  //for all enemy bullets
         if (this.isColliding(enemyMagazine.array,i)) {
             fancyExplosion(this.x + 180,this.y + 75);
+            sounds.explosionPool.get();
             this.start();
             enemyMagazine.array[i].clear(); //collided bullet gets cleared
             game.lives -= 1;
@@ -368,11 +370,14 @@ LiesBullet.prototype.spawn = function(x,y,yspeed){
 }
 
 var Sounds = function() { //not really a superclass but organized code logically
-    this.laserPool = new SoundPool(10)      //number of laser sounds
+    this.laserPool = new SoundPool(10);      //number of laser sounds
     this.laserPool.initLaser();
 
-    this.explosionPool = new SoundPool(15)   //# of explosion sounds
+    this.explosionPool = new SoundPool(15);   //# of explosion sounds
     this.explosionPool.initExplosion();
+
+    this.terminationPool = new SoundPool(8);
+    this.terminationPool.initFired();
 
     this.background = new Audio('sounds/kick_shock.wav');
     this.background.volume = .09;
@@ -402,6 +407,15 @@ SoundPool.prototype.initExplosion = function(){
         this.array[i] = explosion;
     }
 }
+
+SoundPool.prototype.initFired = function(){
+    for (var i = 0; i < this.cap; i++) {
+        var termination = new Audio("sounds/youre_fired.wav");
+        termination.load();
+        this.array[i] = termination;
+    }
+}
+
 
 SoundPool.prototype.get = function() {
     if (this.array[this.selected].currentTime == 0 || this.array[this.selected].ended) {
