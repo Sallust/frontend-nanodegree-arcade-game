@@ -32,13 +32,6 @@
         }
     }
 
-    function loadSound(SoundArray) {
-            SoundArray.forEach(function(url) {
-                _loadSound(url);
-            });
-            console.log(soundCache["sounds/laser.wav"]);
-        }
-
     /* This is our private image loader function, it is
      * called by the public image loader function.
      */
@@ -65,7 +58,7 @@
                  * call all of the onReady() callbacks we have defined.
                  */
                 if(isReady()) {
-                    checkAudioReadyState();
+                    checkAudioReadyState();  //once images are loaded, check sound
                 }
             };
 
@@ -78,33 +71,12 @@
         }
     }
 
-    function _loadSound(url) {
-        if(soundCache[url]) {
-            /* If this URL has been previously loaded it will exist within
-             * our resourceCache array. Just return that image rather
-             * re-loading the image.
-             */
-            return soundCache[url];
-        } else {
-            /* This URL has not been previously loaded and is not present
-             * within our cache; we'll need to load this image.
-             */
-            var audio = new Audio(url);
-            audio.load();
-            soundCache[url] = audio;
-        }
-    }
-
     /* This is used by developer's to grab references to images they know
      * have been previously loaded. If an image is cached, this functions
      * the same as calling load() on that URL.
      */
     function get(url) {
         return resourceCache[url];
-    }
-
-    function getSound(url) {
-        return soundCache[url];
     }
 
     /* This function determines if all of the images that have been requested
@@ -124,22 +96,25 @@
     /* This function will add a function to the callback stack that is called
      * when all requested images are properly loaded.
      */
-    function onReady(func) {
+    //function onReady(func) {
        // readyCallbacks.push(func);
-    }
+    //}
+
+    /**
+    * @description Checks ready state of audio after images have been loaded
+    * @constructor
+    * @param {string} title - The title of the book
+    * @param {string} author - The author of the book
+    */
 
     function checkAudioReadyState() {
         if (sounds.background.readyState != 4) {
             setTimeout(checkAudioReadyState, 1000);
             return;
         }
-        //readyCallbacks.forEach(function(func) { func(); });
         document.getElementById('loading').style.display = "none";
         document.getElementById('opening').style.display = "block";
-
     }
-
-
 
     /* This object defines the publicly accessible functions available to
      * developers by creating a global Resources object.
@@ -147,10 +122,6 @@
     window.Resources = {
         load: load,
         get: get,
-        //onReady: onReady,
-        isReady: isReady,
-        //getSound: getSound,
-        //loadSound: loadSound
-
+        isReady: isReady
     };
 })();
