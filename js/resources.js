@@ -6,9 +6,9 @@
  */
 (function() {
     var resourceCache = {};
-    var loading = [];
-    var readyCallbacks = [];
-    var soundCache = {};
+    //var loading = [];
+    //var readyCallbacks = [];
+    //var soundCache = {};
 
     /* This is the publicly accessible image loading function. It accepts
      * an array of strings pointing to image files or a string for a single
@@ -125,7 +125,7 @@
      * when all requested images are properly loaded.
      */
     function onReady(func) {
-        readyCallbacks.push(func);
+       // readyCallbacks.push(func);
     }
 
     function checkAudioReadyState() {
@@ -133,8 +133,9 @@
             setTimeout(checkAudioReadyState, 1000);
             return;
         }
-        readyCallbacks.forEach(function(func) { func(); });
-        document.getElementById('loading').style.display = "none"
+        //readyCallbacks.forEach(function(func) { func(); });
+        document.getElementById('loading').style.display = "none";
+        document.getElementById('opening').style.display = "block";
 
     }
 
@@ -146,10 +147,10 @@
     window.Resources = {
         load: load,
         get: get,
-        onReady: onReady,
+        //onReady: onReady,
         isReady: isReady,
-        getSound: getSound,
-        loadSound: loadSound
+        //getSound: getSound,
+        //loadSound: loadSound
 
     };
 })();

@@ -28,6 +28,9 @@ var Engine = (function(global) {
     canvas.width = game.CANVAS_WIDTH = 700;
     canvas.height = game.CANVAS_HEIGHT = 560;
     doc.body.appendChild(canvas);
+    doc.getElementById('play').onclick = init;
+
+
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -82,6 +85,7 @@ var Engine = (function(global) {
         lastTime = Date.now();
         main();
         sounds.background.play();
+        doc.getElementById('opening').style.display = "none";
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -166,8 +170,8 @@ var Engine = (function(global) {
         renderEntities();
         renderBullets();
         renderExplosion();
-        document.getElementById('score').innerHTML = game.score;
-        document.getElementById('lives').innerHTML = game.lives;
+        doc.getElementById('score').innerHTML = game.score;
+        doc.getElementById('lives').innerHTML = game.lives;
 
     }
 
@@ -215,13 +219,13 @@ var Engine = (function(global) {
     function gameOver() {
 
         sounds.background.pause();
-        document.getElementById('game-over').style.display = "block";
+        doc.getElementById('game-over').style.display = "block";
 
     }
 
     function gameWin() {
         sounds.background.pause();
-        document.getElementById('game-win').style.display = "block";
+        doc.getElementById('game-win').style.display = "block";
         for (var i = 0; i < 11; i ++) {
             fancyExplosion(Math.random() * game.CANVAS_WIDTH, Math.random() * game.CANVAS_HEIGHT);
         }
@@ -237,7 +241,7 @@ var Engine = (function(global) {
         player.start();
 
 
-        document.getElementById('game-over').style.display = "none";
+        doc.getElementById('game-over').style.display = "none";
         init();
     }
 
@@ -257,18 +261,20 @@ var Engine = (function(global) {
         'images/dcmonuments.png'
     ]);
 
-    Resources.loadSound([
-        'sounds/laser.wav',
-        'sounds/explosion.wav',
-        'sounds/youre_fired.wav'
-    ]);
+    //Resources.loadSound([
+      //  'sounds/laser.wav',
+      //  'sounds/explosion.wav',
+      //  'sounds/youre_fired.wav'
+   // ]);
 
+    
 
-    Resources.onReady(init);
+    //Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developer's can use it more easily
      * from within their app.js files.
      */
+
     global.ctx = ctx;
 })(this);
