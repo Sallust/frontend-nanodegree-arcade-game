@@ -134,6 +134,8 @@
             return;
         }
         readyCallbacks.forEach(function(func) { func(); });
+        document.getElementById('loading').style.display = "none"
+
     }
 
 
