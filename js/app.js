@@ -343,7 +343,7 @@ inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
 TruthBullet.prototype.update = function(dt){
     this.x += this.speed * dt;
 
-    if (this.x >= game.CANVAS_WIDTH) {    //calls bullet.clear when bullet reaches end of screen
+    if (this.x >= game.CANVAS_WIDTH || game.win || game.over) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
 }
@@ -359,7 +359,7 @@ LiesBullet.prototype.update = function(dt){
     this.x -= this.speed * dt;
     this.y -= (this.y - player.y) * dt * 0.25
     this.rotation -= 15 * dt;
-    if (this.x <= 0) {    //calls bullet.clear when bullet reaches end of screen
+    if (this.x <= 0 || game.win || game.over) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
 }
