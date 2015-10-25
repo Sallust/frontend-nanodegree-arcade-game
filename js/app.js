@@ -99,8 +99,10 @@ Enemy.prototype.spawn = function(x,y) {
 
 Enemy.prototype.clear = function() {
     this.x = game.CANVAS_WIDTH;
-    this.y = 0;
+    this.y = -100;
     this.inUse = false;
+    this.Xspeed = 0;
+    this.Yspeed = 0;
 }
 
 Enemy.prototype.spew = function() {
