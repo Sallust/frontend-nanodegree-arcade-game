@@ -1,3 +1,5 @@
+'use strict';
+
 function inherit(subClass,superClass) {
    subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
    subClass.prototype.constructor = subClass; // set constructor on prototype
