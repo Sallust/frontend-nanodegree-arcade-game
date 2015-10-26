@@ -373,14 +373,11 @@ LiesBullet.prototype.spawn = function(x,y,yspeed){
 }
 
 var Sounds = function() { //not really a superclass but organized code logically
-    this.laserPool = new SoundPool(10);      //number of laser sounds
-    this.laserPool.initLaser();
+    this.laserPool = new SoundPool(10,'sounds/laser.wav');    //number of laser sounds
 
-    this.explosionPool = new SoundPool(15);   //# of explosion sounds
-    this.explosionPool.initExplosion();
+    this.explosionPool = new SoundPool(15, 'sounds/explosion.wav');   //# of explosion sounds
 
-    this.terminationPool = new SoundPool(8);
-    this.terminationPool.initFired();
+    this.terminationPool = new SoundPool(8, 'sounds/youre_fired.wav');
 
     this.background = new Audio('sounds/kick_shock.wav');
     this.background.volume = .09;
@@ -388,37 +385,17 @@ var Sounds = function() { //not really a superclass but organized code logically
     this.background.load();
 }
 
-var SoundPool = function(maxElements){
+var SoundPool = function(maxElements, soundSrc){
     Pool.call(this, maxElements);
     this.selected = 0; //selected = index value of currently playing sound
+    for (var i = 0; i < this.cap; i++) {
+        var sound = new Audio(soundSrc);
+        sound.load();
+        this.array[i] = sound;
+    }
 }
 
 inherit(SoundPool,Pool); //SoundPool, a pool of sounds, is subClass of Pool
-
-SoundPool.prototype.initLaser = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var laser = new Audio('sounds/laser.wav');
-        laser.load();
-        this.array[i] = laser;
-    }
-}
-
-SoundPool.prototype.initExplosion = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var explosion = new Audio("sounds/explosion.wav");
-        explosion.load();
-        this.array[i] = explosion;
-    }
-}
-
-SoundPool.prototype.initFired = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var termination = new Audio("sounds/youre_fired.wav");
-        termination.load();
-        this.array[i] = termination;
-    }
-}
-
 
 SoundPool.prototype.get = function() {
     if (this.array[this.selected].currentTime == 0 || this.array[this.selected].ended) {
