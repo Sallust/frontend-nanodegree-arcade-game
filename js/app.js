@@ -1,4 +1,4 @@
-inherit = function(subClass,superClass) {
+function inherit(subClass,superClass) {
    subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
    subClass.prototype.constructor = subClass; // set constructor on prototype
 }
@@ -10,7 +10,7 @@ var Game = function() {
     this.paused = false;
     this.over = false;
     this.win = false;
-}
+};
 
 Game.prototype.handleInput = function(input){
     if (input == 'pause' && this.paused === false) {
@@ -21,7 +21,7 @@ Game.prototype.handleInput = function(input){
         sounds.background.play();
     } if (input == 'new' && this.over)
         this.restart();
-}
+};
 
 Game.prototype.restart = function(){
     this.score = 0;
@@ -35,7 +35,7 @@ Game.prototype.restart = function(){
     sounds.background.play();
     this.over = false;
     this.win = false;
-}
+};
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -55,7 +55,7 @@ var Enemy = function() {
 Enemy.prototype.update = function(dt) {
     this.y += this.Yspeed * dt;
     this.x += this.Xspeed * dt;
-    if (Math.random() > .995 && this.inUse && !this.justSpewed) {
+    if (Math.random() > 0.995 && this.inUse && !this.justSpewed) {
         this.spew();
         this.justSpewed = true;
         this.spewCounter = 0;
@@ -77,21 +77,21 @@ Enemy.prototype.update = function(dt) {
        // this.sprite = 'images/christie.jpg';
         this.justSpewed = false;
     }
-}
+};
 
 Enemy.prototype.render = function() {
      if (this.frameIndex >= 4) {
             this.frameIndex = 0;
-        };
+        }
     ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 66.7, 67);
     this.frameIndex += 0.2;
-}
+};
 
 Enemy.prototype.spawn = function(x,y) {
     this.x = x;
     this.y = y;
     this.inUse = true;
-}
+};
 
 Enemy.prototype.clear = function() {
     this.x = game.CANVAS_WIDTH;
@@ -99,11 +99,11 @@ Enemy.prototype.clear = function() {
     this.inUse = false;
     this.Xspeed = 0;
     this.Yspeed = 0;
-}
+};
 
 Enemy.prototype.spew = function() {
-    enemyMagazine.get(this.x + 20, this.y + 5, this.y - player.y) //passes x and y values of enemy to enemyMagazine to bullet
-}
+    enemyMagazine.get(this.x + 20, this.y + 5, this.y - player.y); //passes x and y values of enemy to enemyMagazine to bullet
+};
 
 Enemy.prototype.checkCollision = function() {
     for (var i = 0; i < player.magazine.cap; i++) {
@@ -113,15 +113,15 @@ Enemy.prototype.checkCollision = function() {
             player.magazine.array[i].clear();
             game.score += 100;
             sounds.terminationPool.get();
-        };
-    };
-}
+        }
+    }
+};
 
 Enemy.prototype.isColliding = function(array,i) {
         if (this.x < array[i].x + 3  && this.x + this.width  > array[i].x && this.y < array[i].y + 4 && this.y + this.height > array[i].y) {
             return true;
-        };
-}
+        }
+};
 
 var Player = function(){
     this.start();
@@ -132,7 +132,7 @@ var Player = function(){
     this.magazine = new Pool(20);   //max bullets set to 20 here
     this.magazine.init(TruthBullet);
     this.frameIndex = 0;
-}
+};
 
 Player.prototype.update = function(dt) {
     //collisions with margins accounted
@@ -146,11 +146,11 @@ Player.prototype.update = function(dt) {
             this.start();
             enemyMagazine.array[i].clear(); //collided bullet gets cleared
             game.lives -= 1;
-            if (game.lives == 0) {
+            if (game.lives === 0) {
                 game.over = true;
-            };
-        };
-    };
+            }
+        }
+    }
 };
 
 Player.prototype.isColliding = function(array,i) {
@@ -163,11 +163,11 @@ Player.prototype.isColliding = function(array,i) {
 Player.prototype.render = function() {
     if (this.frameIndex >= 4) {
             this.frameIndex = 0;
-        };
+        }
     ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 171, 93);
     this.frameIndex += 1/2;
     for (var i = 0; i < game.lives; i++) {
-        ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50)
+        ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50);
     }
 };
 
@@ -180,19 +180,19 @@ Player.prototype.handleInput = function(input){
         this.y -=30;
     if (input == 'down' && this.y < game.CANVAS_HEIGHT - this.height)
         this.y +=30;
-    if (input == 'space')
+    if (input == 'space' && !game.paused)
         this.shoot();
-}
+};
 
 Player.prototype.start = function(){
     this.x = 10;
-    this.y = 280
-}
+    this.y = 280;
+};
 
 Player.prototype.shoot = function(){
-    this.magazine.get(this.x + 232, this.y + 128) //passes x and y values of player to magazine to bullet
+    this.magazine.get(this.x + 232, this.y + 128); //passes x and y values of player to magazine to bullet
     sounds.laserPool.get();
-}
+};
 
 var Background = function(imgSrc,speed,width,height){
     this.x = 0;
@@ -201,7 +201,8 @@ var Background = function(imgSrc,speed,width,height){
     this.speed = speed;
     this.width = width;
     this.height = height;
-}
+
+};
 
 Background.prototype.render = function() {
     ctx.drawImage(Resources.get(this.image), this.x, game.CANVAS_HEIGHT - this.height);
@@ -213,26 +214,26 @@ Background.prototype.update = function(dt) {
     if (this.x <= -this.width) {
         this.x = 0;
     }
-}
+};
 
 var Pool = function(maxElements) {
     this.array = [];
     this.cap = maxElements;
-}
+};
 
 Pool.prototype.init = function(constructorFunc){
     for (var i = 0; i < this.cap; i++) {
         var element = new constructorFunc();
         this.array[i] = element;
     }
-}
+};
 
 Pool.prototype.get = function(x,y,angle){
     if (!this.array[this.cap - 1].inUse) {     //runs when bullet is NOT in use
         this.array[this.cap - 1].spawn(x,y,angle);    //calls bullet.spawn
         this.array.unshift(this.array.pop());         //moves this bullet to the front of the array
     }
-}
+};
 
 Pool.prototype.arm = function(){
     for (var i = 0; i < this.cap; i++) {   //for all bullets in magazine
@@ -240,11 +241,11 @@ Pool.prototype.arm = function(){
             this.array[i].render();     //draw the bullet
         }
     }
-}
+};
 
 var EvilArmy = function(maxElements) {
     Pool.call(this, maxElements);
-}
+};
 
 inherit(EvilArmy,Pool);  //EvilArmy, a pool of Enemies, is subClass of Pool
 
@@ -258,22 +259,22 @@ EvilArmy.prototype.makeArmy = function(enlisted){
           //  evilArmy.get(x,y);
           //  x += 100;
        // }
-    };
-}
+    }
+};
 
 EvilArmy.prototype.poolStatus = function() {
-    function isInUse (element, index, array) {
-        return !element.inUse
+    function isInUse (element) {
+        return !element.inUse;
     }
-    return this.array.every(isInUse)
-}
+    return this.array.every(isInUse);
+};
 
 var Bullet = function() {
     this.inUse = false;
     this.speed = 75;
     this.rotation = 0;
     this.yspeed = 0;
-}
+};
 
 Bullet.prototype.render = function() {
     ctx.save();
@@ -281,25 +282,25 @@ Bullet.prototype.render = function() {
     ctx.rotate(this.rotation);
     ctx.drawImage(Resources.get(this.sprite), -8, -8);
     ctx.restore();
-}
+};
 
 Bullet.prototype.spawn = function(x,y){
     this.x = x;
     this.y = y;
     this.inUse = true;
-}
+};
 
 Bullet.prototype.clear = function(){
     this.x = 0;
     this.y = 0;
     this.inUse = false;
-}
+};
 
 var TruthBullet = function() {   //type of bullet player shoots
     Bullet.call(this);
     this.sprite = 'images/briefcase.png';
     this.speed = 100;
-}
+};
 
 inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
 
@@ -308,23 +309,23 @@ TruthBullet.prototype.update = function(dt){
     if (this.x >= game.CANVAS_WIDTH || game.win || game.over) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
-}
+};
 
 var LiesBullet = function() {   //type of bullet player shoots
     Bullet.call(this);
     this.sprite = 'images/redstar.png';
-}
+};
 
 inherit(LiesBullet,Bullet); //LiesBullet is subClass of Bullet
 
 LiesBullet.prototype.update = function(dt){
     this.x -= this.speed * dt;
-    this.y -= (this.y - player.y) * dt * 0.25
+    this.y -= (this.y - player.y) * dt * 0.25;
     this.rotation -= 15 * dt;
     if (this.x <= 0 || game.win || game.over) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
-}
+};
 
 var Sounds = function() { //not really a superclass but organized code logically
     this.laserPool = new SoundPool(10,'sounds/laser.wav');    //number of laser sounds
@@ -332,10 +333,10 @@ var Sounds = function() { //not really a superclass but organized code logically
     this.terminationPool = new SoundPool(8, 'sounds/youre_fired.wav');
 
     this.background = new Audio('sounds/kick_shock.wav');
-    this.background.volume = .09;
+    this.background.volume = 0.09;
     this.background.loop = true;
     this.background.load();
-}
+};
 
 var SoundPool = function(maxElements, soundSrc){
     this.array = [];
@@ -346,14 +347,14 @@ var SoundPool = function(maxElements, soundSrc){
         sound.load();
         this.array[i] = sound;
     }
-}
+};
 
 SoundPool.prototype.get = function() {
-    if (this.array[this.selected].currentTime == 0 || this.array[this.selected].ended) {
+    if (this.array[this.selected].currentTime === 0 || this.array[this.selected].ended) {
         this.array[this.selected].play();
-        this.selected = (this.selected + 1) % this.array.length //loops through sound index
+        this.selected = (this.selected + 1) % this.array.length; //loops through sound index
     }
-}
+};
 
 var Particle = function() {
     this.scale = 1;
@@ -367,7 +368,7 @@ var Particle = function() {
     this.inUse = false;
     this.color = this.pickColor();
     this.blinking = Math.random();
-}
+};
 
 Particle.prototype.spawn = function(x,y,angle){
     this.inUse = true;
@@ -380,7 +381,8 @@ Particle.prototype.spawn = function(x,y,angle){
     this.angle = angle;
     this.velocityX = this.speed * Math.cos(angle * Math.PI / 180);
     this.velocityY = this.speed * Math.sin(angle * Math.PI / 180);
-}
+};
+
 Particle.prototype.pickColor = function() {
     if (Math.random() < 0.33) {
         return '#E0162B'; //old Glory Red
@@ -388,7 +390,7 @@ Particle.prototype.pickColor = function() {
         return '#FFF';
     } else
         return '#0052A5'; //Old Glory Blue
-}
+};
 
 Particle.prototype.update = function(dt) {
     if (this.inUse) {
@@ -399,8 +401,8 @@ Particle.prototype.update = function(dt) {
     if (this.scale <= 0) {
         this.scale = 0;
         this.inUse = false;
-    };
-}
+    }
+};
 
 Particle.prototype.render = function() {
     ctx.save();
@@ -423,13 +425,13 @@ Particle.prototype.render = function() {
     ctx.fill();
     ctx.closePath();
     ctx.restore();
-}
+};
 
 var fancyExplosion = function(x,y) {
     for (var angle = 0; angle<360; angle += 10) {
         particlesPool.get (x, y, angle);
     }
-}
+};
 
 var particlesPool = new Pool(100);
 particlesPool.init(Particle);
@@ -449,7 +451,7 @@ evilArmy.makeArmy(3);
 var enemyMagazine = new Pool(5);
 enemyMagazine.init(LiesBullet);
 
-var allEnemies = evilArmy.array;
+//var allEnemies = evilArmy.array;
 
 var player = new Player();
 

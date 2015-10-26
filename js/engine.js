@@ -113,7 +113,7 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
+        evilArmy.array.forEach(function(enemy) {
             enemy.update(dt);
             enemy.checkCollision();
         });
@@ -229,7 +229,7 @@ var Engine = (function(global) {
         for (var i = 0; i < 11; i ++) {
             fancyExplosion(Math.random() * game.CANVAS_WIDTH, Math.random() * game.CANVAS_HEIGHT);
         }
-      
+
 
     }
 
@@ -267,7 +267,7 @@ var Engine = (function(global) {
       //  'sounds/youre_fired.wav'
    // ]);
 
-    
+
 
     //Resources.onReady(init);
 
