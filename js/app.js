@@ -86,7 +86,7 @@ Enemy.prototype.render = function() {
      if (this.frameIndex >= 4) {
             this.frameIndex = 0;
         };
-    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 100, 102);
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 75, 75.25);
     this.frameIndex += 0.2;
 
 }
@@ -118,7 +118,7 @@ Enemy.prototype.checkCollision = function() {
             game.score += 100;
             sounds.terminationPool.get();
 
-            
+
         };
     };
 }
@@ -172,7 +172,7 @@ Player.prototype.render = function() {
     if (this.frameIndex >= 4) {
             this.frameIndex = 0;
         };
-    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 256, 140);
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 192, 105);
     this.frameIndex += 1/2;
     for (var i = 0; i < game.lives; i++) {
         ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50)
