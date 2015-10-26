@@ -26,9 +26,9 @@ Game.prototype.handleInput = function(input){
 Game.prototype.restart = function(){
     this.score = 0;
     this.lives = 5;
-    evilArmy.init();
+    evilArmy.init(Enemy);
     evilArmy.makeArmy(7);
-    enemyMagazine.init();
+    enemyMagazine.init(LiesBullet);
     player.start();
     document.getElementById('game-over').style.display = "none";
     document.getElementById('game-win').style.display = "none";
@@ -36,7 +36,6 @@ Game.prototype.restart = function(){
     this.over = false;
     this.win = false;
 }
-
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -78,17 +77,14 @@ Enemy.prototype.update = function(dt) {
        // this.sprite = 'images/christie.jpg';
         this.justSpewed = false;
     }
-
 }
 
-// Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
      if (this.frameIndex >= 4) {
             this.frameIndex = 0;
         };
-    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 75, 75.25);
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 66.7, 67);
     this.frameIndex += 0.2;
-
 }
 
 Enemy.prototype.spawn = function(x,y) {
@@ -117,8 +113,6 @@ Enemy.prototype.checkCollision = function() {
             player.magazine.array[i].clear();
             game.score += 100;
             sounds.terminationPool.get();
-
-
         };
     };
 }
@@ -127,7 +121,6 @@ Enemy.prototype.isColliding = function(array,i) {
         if (this.x < array[i].x + 3  && this.x + this.width  > array[i].x && this.y < array[i].y + 4 && this.y + this.height > array[i].y) {
             return true;
         };
-
 }
 
 var Player = function(){
@@ -136,8 +129,8 @@ var Player = function(){
     this.width = 250;
     this.sprite = 'images/trumpspriteboard.png';
     this.lifeSprite = 'images/trumpbutton.png';
-    this.magazine = new Magazine(20);   //max bullets set to 5 here
-    this.magazine.init();
+    this.magazine = new Pool(20);   //max bullets set to 20 here
+    this.magazine.init(TruthBullet);
     this.frameIndex = 0;
 }
 
@@ -166,19 +159,16 @@ Player.prototype.isColliding = function(array,i) {
     }
 };
 
-
 // Draw the enemy on the screen, required method for game
 Player.prototype.render = function() {
     if (this.frameIndex >= 4) {
             this.frameIndex = 0;
         };
-    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 192, 105);
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 171, 93);
     this.frameIndex += 1/2;
     for (var i = 0; i < game.lives; i++) {
         ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50)
     }
-
-
 };
 
 Player.prototype.handleInput = function(input){
@@ -204,7 +194,7 @@ Player.prototype.shoot = function(){
     sounds.laserPool.get();
 }
 
-var Background = function(imgSrc,speed,width,height){ //previous speed was 50
+var Background = function(imgSrc,speed,width,height){
     this.x = 0;
     this.y = 0;
     this.image = imgSrc;
@@ -225,11 +215,16 @@ Background.prototype.update = function(dt) {
     }
 }
 
-
-
 var Pool = function(maxElements) {
     this.array = [];
     this.cap = maxElements;
+}
+
+Pool.prototype.init = function(constructorFunc){
+    for (var i = 0; i < this.cap; i++) {
+        var element = new constructorFunc();
+        this.array[i] = element;
+    }
 }
 
 Pool.prototype.get = function(x,y,angle){
@@ -247,31 +242,11 @@ Pool.prototype.arm = function(){
     }
 }
 
-var Magazine = function(maxElements){
-    Pool.call(this, maxElements);
-}
-
-inherit(Magazine,Pool);  //Magazine, a pool of TruthBullets is subClass of Pool
-
-Magazine.prototype.init = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var bullet = new TruthBullet();
-        this.array[i] = bullet;
-    }
-}
-
 var EvilArmy = function(maxElements) {
     Pool.call(this, maxElements);
 }
 
 inherit(EvilArmy,Pool);  //EvilArmy, a pool of Enemies, is subClass of Pool
-
-EvilArmy.prototype.init = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var enemy = new Enemy();
-        this.array[i] = enemy;
-    };
-}
 
 EvilArmy.prototype.makeArmy = function(enlisted){
     var x = 500;
@@ -291,19 +266,6 @@ EvilArmy.prototype.poolStatus = function() {
         return !element.inUse
     }
     return this.array.every(isInUse)
-}
-
-var EnemyMagazine = function(maxElements) {
-    Pool.call(this, maxElements);
-}
-
-inherit(EnemyMagazine,Pool);  //EnemyMagazine, a pool of LiesBullets is subClass of Pool
-
-EnemyMagazine.prototype.init = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var bullet = new LiesBullet();
-        this.array[i] = bullet;
-    }
 }
 
 var Bullet = function() {
@@ -343,7 +305,6 @@ inherit(TruthBullet,Bullet);  //TruthBullet is subClass of Bullet
 
 TruthBullet.prototype.update = function(dt){
     this.x += this.speed * dt;
-
     if (this.x >= game.CANVAS_WIDTH || game.win || game.over) {    //calls bullet.clear when bullet reaches end of screen
         this.clear();
     }
@@ -365,18 +326,9 @@ LiesBullet.prototype.update = function(dt){
     }
 }
 
-LiesBullet.prototype.spawn = function(x,y,yspeed){
-    this.x = x;
-    this.y = y;
-    //this.yspeed = yspeed;
-    this.inUse = true;
-}
-
 var Sounds = function() { //not really a superclass but organized code logically
     this.laserPool = new SoundPool(10,'sounds/laser.wav');    //number of laser sounds
-
     this.explosionPool = new SoundPool(15, 'sounds/explosion.wav');   //# of explosion sounds
-
     this.terminationPool = new SoundPool(8, 'sounds/youre_fired.wav');
 
     this.background = new Audio('sounds/kick_shock.wav');
@@ -386,21 +338,20 @@ var Sounds = function() { //not really a superclass but organized code logically
 }
 
 var SoundPool = function(maxElements, soundSrc){
-    Pool.call(this, maxElements);
+    this.array = [];
+    //this.cap = maxElements;
     this.selected = 0; //selected = index value of currently playing sound
-    for (var i = 0; i < this.cap; i++) {
+    for (var i = 0; i < maxElements; i++) {
         var sound = new Audio(soundSrc);
         sound.load();
         this.array[i] = sound;
     }
 }
 
-inherit(SoundPool,Pool); //SoundPool, a pool of sounds, is subClass of Pool
-
 SoundPool.prototype.get = function() {
     if (this.array[this.selected].currentTime == 0 || this.array[this.selected].ended) {
         this.array[this.selected].play();
-        this.selected = (this.selected + 1) % this.cap //loops through sound index
+        this.selected = (this.selected + 1) % this.array.length //loops through sound index
     }
 }
 
@@ -427,8 +378,6 @@ Particle.prototype.spawn = function(x,y,angle){
     this.x = x;
     this.y = y;
     this.angle = angle;
-
-    //velocity is rotated by angle
     this.velocityX = this.speed * Math.cos(angle * Math.PI / 180);
     this.velocityY = this.speed * Math.sin(angle * Math.PI / 180);
 }
@@ -482,48 +431,28 @@ var fancyExplosion = function(x,y) {
     }
 }
 
-var ParticlesPool = function(maxElements){
-    Pool.call(this, maxElements);
-}
-
-inherit(ParticlesPool,Pool); //ParticlesPool, a pool of particles, is subClass of Pool
-
-ParticlesPool.prototype.init = function(){
-    for (var i = 0; i < this.cap; i++) {
-        var particle = new Particle();
-        this.array[i] = particle;
-    }
-}
-
-var particlesPool = new ParticlesPool(100);
-particlesPool.init();
+var particlesPool = new Pool(100);
+particlesPool.init(Particle);
 
 var cloudsBackground = new Background('images/clouds2.png', 100, 700, 560);
 var monumentsBackground = new Background('images/dcmonuments.png',200, 2100, 560);
 var grassBackground = new Background('images/grass.png', 400, 700, 100);
 
 
-
-
 var game = new Game();
 var sounds = new Sounds();
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
 var evilArmy = new EvilArmy(7);
-evilArmy.init();
+evilArmy.init(Enemy);
 evilArmy.makeArmy(3);
 
-var enemyMagazine = new EnemyMagazine(5);
-enemyMagazine.init();
+var enemyMagazine = new Pool(5);
+enemyMagazine.init(LiesBullet);
 
 var allEnemies = evilArmy.array;
 
 var player = new Player();
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         32: 'space',
