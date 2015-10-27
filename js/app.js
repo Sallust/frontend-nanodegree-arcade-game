@@ -1,5 +1,3 @@
-'use strict';
-
 function inherit(subClass,superClass) {
    subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
    subClass.prototype.constructor = subClass; // set constructor on prototype
@@ -87,7 +85,7 @@ Enemy.prototype.render = function() {
      if (this.frameIndex >= 4) {
             this.frameIndex = 0;
         }
-    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 66.7, 67);
+    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 102, 100, 102, this.x, this.y, 66, 68);
     this.frameIndex += 0.2;
 };
 
@@ -176,7 +174,7 @@ Player.prototype.render = function() {
             this.frameIndex = 0;
         }
         if (!game.over) {
-             ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 171, 93);
+             ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 84, 150, 84, this.x, this.y, 150, 84);
     this.frameIndex += 1/2;
         }
 
@@ -188,7 +186,7 @@ Player.prototype.render = function() {
         ctx.translate(this.x,this.y);
         ctx.rotate(this.rotation);
         this.rotation -= 0.05
-        ctx.drawImage(Resources.get(this.sprite), 0, 0, 256, 140, -171/2, -93/2, 171, 93);
+        ctx.drawImage(Resources.get(this.sprite), 0, 0, 150, 84, -140/2, -84/2, 140, 84);
         //fancyExplosion(this.x -171/2 ,this.y - 93/2);
         //fancyExplosion(this.x + 171/2, this.y +93/2);
         ctx.restore();
@@ -218,7 +216,7 @@ Player.prototype.start = function(){
 };
 
 Player.prototype.shoot = function(){
-    this.magazine.get(this.x + 232, this.y + 128); //passes x and y values of player to magazine to bullet
+    this.magazine.get(this.x + 140, this.y + 77); //passes x and y values of player to magazine to bullet
     sounds.laserPool.get();
 };
 
