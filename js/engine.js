@@ -51,7 +51,7 @@ var Engine = (function(global) {
         updateEntities(dt);
         updateBackground(dt);  //********Call to update Background function
         updateBullets(dt); //***Call to update bullet function
-        // checkCollisions();
+        player.checkCollision();
         updateExplosion(dt);
     }
 

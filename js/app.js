@@ -1,9 +1,9 @@
 function inherit(subClass,superClass) {
-   subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
-   subClass.prototype.constructor = subClass; // set constructor on prototype
+   subClass.prototype = Object.create(superClass.prototype);
+   subClass.prototype.constructor = subClass;
 }
 
-//global variables
+//game attributes variables
 var Game = function() {
     this.score = 0;
     this.lives = 3;
@@ -12,6 +12,7 @@ var Game = function() {
     this.win = false;
 };
 
+//input handler for pause and new game; checks game.paused state and alters it
 Game.prototype.handleInput = function(input){
     if (input == 'pause' && this.paused === false) {
         this.paused = true;
@@ -23,6 +24,7 @@ Game.prototype.handleInput = function(input){
         this.restart();
 };
 
+//called by player onscreen click during game.over or game.win; most game variables
 Game.prototype.restart = function(){
     this.score = 0;
     this.lives = 5;
@@ -39,12 +41,12 @@ Game.prototype.restart = function(){
     this.win = false;
 };
 
-// Enemies our player must avoid
+// Enemy attributes assigned including random X & Y speed between 40 and 80
 var Enemy = function() {
     this.x = 500;
     this.y = 0;
-    this.height = 100;
-    this.width = 100;
+    this.height = 66;
+    this.width = 68;
     this.inUse = false;
     this.Xspeed = 40 + Math.random() * 40;
     this.Yspeed = 40 + Math.random() * 40;
@@ -52,10 +54,15 @@ var Enemy = function() {
     this.frameIndex = 0;
 };
 
+/*
+*updates enemy position;
+*spews bullet when Math.Random() happens to be less than .005;
+*X & Y speed reversed at respective borders
+*/
 Enemy.prototype.update = function(dt) {
     this.y += this.Yspeed * dt;
     this.x += this.Xspeed * dt;
-    if (Math.random() > 0.995 && this.inUse) {
+    if (Math.random() < 0.005 && this.inUse) {
         this.spew();
     }
     if (this.y >= game.CANVAS_HEIGHT - this.height || this.y <= 0) {
@@ -66,6 +73,8 @@ Enemy.prototype.update = function(dt) {
     }
 };
 
+//cycles through 4 images on spritesheet
+//Math.floor() and small increments acheive desired cycle speed
 Enemy.prototype.render = function() {
      if (this.frameIndex >= 4) {
             this.frameIndex = 0;
@@ -80,6 +89,7 @@ Enemy.prototype.spawn = function(x,y) {
     this.inUse = true;
 };
 
+//Enemy stopped & moved to position off screen (away from possible collisions)
 Enemy.prototype.clear = function() {
     this.x = game.CANVAS_WIDTH;
     this.y = -100;
@@ -88,10 +98,16 @@ Enemy.prototype.clear = function() {
     this.Yspeed = 0;
 };
 
+//Enemy spews bullet passing its own x & y to bullet
 Enemy.prototype.spew = function() {
-    enemyMagazine.get(this.x + 20, this.y + 5, this.y - player.y); //passes x and y values of enemy to enemyMagazine to bullet
+    enemyMagazine.get(this.x + 20, this.y + 5, this.y - player.y);
 };
 
+/*for all player's bullets
+*checks if bullet is colliding:
+*explosion, enemy reset, bullet reset, score increases, sound fires
+*called by Engine update
+*/
 Enemy.prototype.checkCollision = function() {
     for (var i = 0; i < player.magazine.cap; i++) {
         if (this.isColliding(player.magazine.array,i)) {
@@ -104,12 +120,14 @@ Enemy.prototype.checkCollision = function() {
     }
 };
 
+//defines collision: slightly modified bounding box method
 Enemy.prototype.isColliding = function(array,i) {
         if (this.x < array[i].x + 8  && this.x + this.width  > array[i].x && this.y < array[i].y + 8 && this.y + this.height > array[i].y) {
             return true;
         }
 };
 
+//player position set; player's magazine instantiated here
 var Player = function(){
     this.start();
     this.height = 140;
@@ -123,10 +141,20 @@ var Player = function(){
 };
 
 Player.prototype.update = function(dt) {
+
     //collisions with margins accounted
     //if (allEnemies[0].y - 65 < this.y && this.y < allEnemies[0].y + 82 && allEnemies[0].x - 86 < this.x && this.x < allEnemies[0].x + 86) {
        // this.start();
     //}
+
+    //var test = 0;
+    if (game.over) {
+        this.x = 150; //Math.sin(test)
+        this.y = game.CANVAS_HEIGHT/2;
+        //test += 0.02;
+    }
+};
+Player.prototype.checkCollision = function() {
     for (var i = 0; i < enemyMagazine.cap; i++) {  //for all enemy bullets
         if (this.isColliding(enemyMagazine.array,i)) {
             fancyExplosion(this.x + 180,this.y + 75);
@@ -138,12 +166,6 @@ Player.prototype.update = function(dt) {
                 game.over = true;
             }
         }
-    }
-    //var test = 0;
-    if (game.over) {
-        this.x = 150; //Math.sin(test)
-        this.y = game.CANVAS_HEIGHT/2;
-        //test += 0.02;
     }
 };
 
@@ -473,6 +495,9 @@ enemyMagazine.init(LiesBullet);
 
 var player = new Player();
 
+function preventDef(event) {
+  event.preventDefault();
+}
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         32: 'space',
@@ -483,7 +508,13 @@ document.addEventListener('keyup', function(e) {
         80: 'pause',
         78: 'new'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
     game.handleInput(allowedKeys[e.keyCode]);
 });
+
+window.onkeydown = function(e) {
+    if(e.keyCode == 32 || e.keyCode == 38 || e.keyCode == 40) {
+        e.preventDefault();
+    }
+};
+
