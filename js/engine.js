@@ -14,9 +14,9 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        if (evilArmy.poolStatus()) { //checks when all enemies are killed
-            game.win = true;
-        }
+        //if (evilArmy.poolStatus()) { //checks when all enemies are killed
+            //game.win = true;
+        //}
 
         if (game.over) {
             gameOver();
@@ -49,6 +49,7 @@ var Engine = (function(global) {
         updateBullets(dt);
         player.checkCollision();
         updateExplosion(dt);
+        evilArmy.update()
     }
 
     function updateEntities(dt) {

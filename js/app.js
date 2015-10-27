@@ -12,6 +12,7 @@ var Game = function() {
     this.paused = false;
     this.over = false;
     this.win = false;
+    this.spawnWave = 0;
 };
 
 //input handler for pause and new game; checks game.paused state and alters it
@@ -89,6 +90,8 @@ Enemy.prototype.spawn = function(x,y) {
     this.x = x;
     this.y = y;
     this.inUse = true;
+    this.Yspeed = 40 + Math.random() * 40;
+    this.Xspeed = 40 + Math.random() * 40;
 };
 
 //Enemy stopped & moved to position off screen (away from possible collisions)
@@ -122,17 +125,18 @@ Enemy.prototype.checkCollision = function() {
     }
 };
 
-//defines collision: slightly modified bounding box method
+//defines collision: slightly modified bounding box method;
+//also check in Use
 Enemy.prototype.isColliding = function(array,i) {
-        if (this.x < array[i].x + 8  && this.x + this.width  > array[i].x && this.y < array[i].y + 8 && this.y + this.height > array[i].y) {
+        if (this.x < array[i].x + 8  && this.x + this.width  > array[i].x && this.y < array[i].y + 8 && this.y + this.height > array[i].y && array[i].inUse) {
             return true;
         }
 };
 
 Enemy.prototype.checkPlayerCollision = function() {
     if (this.x <player.x + player.width  && this.x + this.width  > player.x && this.y < player.y + player.height && this.y + this.height > player.y) {
-        this.clear();
         fancyExplosion(this.x + 180,this.y + 75);
+        this.clear();
         sounds.explosionPool.get();
         game.lives -= 1;
         player.start();
@@ -180,7 +184,7 @@ Player.prototype.checkCollision = function() {
 
 //checks collision of player vs. enemy magazine
 Player.prototype.isColliding = function(array,i) {
-    if (this.x < array[i].x + 4  && this.x + this.width  > array[i].x && this.y <array[i].y + 4 && this.y + this.height > array[i].y) {
+    if (this.x < array[i].x + 4  && this.x + this.width  > array[i].x && this.y <array[i].y + 4 && this.y + this.height > array[i].y && array[i].inUse) {
         return true;
     }
 };
@@ -310,6 +314,7 @@ Pool.prototype.arm = function(){
 //Evil Army, a specific subclass of pool with special methods
 var EvilArmy = function(maxElements) {
     Pool.call(this, maxElements);
+    this.spawnWave = 0;
 };
 
 inherit(EvilArmy,Pool);
@@ -320,7 +325,7 @@ EvilArmy.prototype.makeArmy = function(enlisted){
     var y = 0;
     for (var i = 0; i < enlisted; i++) {
         evilArmy.get(x,y);
-        y += 75;
+        y += 50;
     }
 };
 
@@ -331,6 +336,29 @@ EvilArmy.prototype.poolStatus = function() {
         return !element.inUse;
     }
     return this.array.every(isInUse);
+};
+
+EvilArmy.prototype.update = function() {
+    /*
+    switch (this.spawnWave) {
+        case (this.spawnWave <= 3):
+            this.spawnWave += 1;
+            break;
+        case (this.spawnWave >= 4):
+            game.win = true;
+            break;
+
+    }*/
+    if (evilArmy.poolStatus()) {
+        this.spawnWave += 1;
+        if (this.spawnWave >= 6) {
+            game.win = true;
+        }
+        if (!game.win) {
+            evilArmy.makeArmy(4 + this.spawnWave);
+        }
+
+    }
 };
 
 var Bullet = function() {
@@ -355,9 +383,10 @@ Bullet.prototype.spawn = function(x,y){
     this.inUse = true;
 };
 
+//bullet clears off-screen
 Bullet.prototype.clear = function(){
     this.x = 0;
-    this.y = 0;
+    this.y = 900;
     this.inUse = false;
 };
 
@@ -538,9 +567,9 @@ var grassBackground = new Background('images/grass.png', 400, 700, 100);
 var game = new Game();
 var sounds = new Sounds();
 
-var evilArmy = new EvilArmy(7);
+var evilArmy = new EvilArmy(10);
 evilArmy.init(Enemy);
-evilArmy.makeArmy(7);
+evilArmy.makeArmy(2);
 
 //There can only be 5 enemy bullets on the screen at any given time
 var enemyMagazine = new Pool(5);
