@@ -44,6 +44,7 @@ var Engine = (function(global) {
         main();
         sounds.background.play();
         doc.getElementById('opening').style.display = "none";
+        doc.getElementById('score-div').style.display = "block";
     }
 
     function update(dt) {
@@ -89,7 +90,6 @@ var Engine = (function(global) {
         renderBullets();
         renderExplosion();
         doc.getElementById('score').innerHTML = game.score;
-        doc.getElementById('lives').innerHTML = game.lives;
     }
 
     function renderEntities() {

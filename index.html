@@ -7,17 +7,21 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-	<h1>Welcome to Republican Invaders!</h1>
-	<br>
-    <div class="lives">LIVES: <span id="lives"></span></div>
-	<div class="score">SCORE: <span id="score"></span></div>
+	<h1>Help make america great, again!</h1>
+	<div class="score" id="score-div">SCORE: <span id="score"></span></div>
 	<div class="game-over" id="game-over">GAME OVER<p><span onclick="game.restart()">Restart</span></p></div>
-    <div class="game-win" id="game-win">YOU WIN <br>  <p><span onclick="game.restart()">Restart</span></p></div>
+    <div class="game-win" id="game-win">YOU WIN!<br>  <p><span onclick="game.restart()">Restart</span></p></div>
     <div class="loading" id="loading">Loading... <br>  <p><span>Please Wait</span></p></div>
     <div class="opening" id="opening">Welcome <br>  <p><span id="play">Play</span></p></div>
-
-
-
+    <div class="instructions" id="instructions">
+        <h2>Instructions</h2>
+        <p>Avoid the red stars <br> and shoot down your opponents!</p>
+        <p><span class="buttons">ARROW</span> Keys Move Helicopter</p>
+        <p><span class="buttons">SPACE</span> Shoots briefcases</p>
+        <p><span class="buttons">P</span> Pauses </p>
+        <p><span class="buttons">N</span> New Game </p>
+        <p>Enjoy!</p>
+    </div>
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>

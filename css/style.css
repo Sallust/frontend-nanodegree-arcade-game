@@ -2,55 +2,93 @@ body {
     text-align: center;
     font-family: 'Work Sans', sans-serif;
     text-transform: uppercase;
+    text-shadow: 0px 2px 12px rgba(150, 150, 150, 1);
 }
 
+h1 {
+	color: #0052A5;
+	font-size: 50px;
+	margin: 15px 0;
+}
 
 .score {
 	position: absolute;
-	right: 480px;
-	color:  #FF7F00;
-
+	left: calc(570px + (100% - 700px)/2);
+	color:  #E0162B;
+	font-size: 20px;
 	cursor: default;
+	display: none;
+	text-shadow: 0px 0px 4px rgba(150, 150, 150, 1);
 }
 
-.lives {
-	position: absolute;
-	left: 480px;
-	color:  #FF7F00;
-
-	cursor: default;
-}
 .game-over,
 .game-win {
 	position: absolute;
 	top: 300px;
 	left: calc(50% - 30px);
 	color: #FFF;
-	/*font-family: Helvetica, sans-serif;font-family: Helvetica, sans-serif;font-family: Helvetica, sans-serif;*/
 	font-size: 50px;
 	cursor: default;
 	display: none;
 }
 .game-over span {
-	font-size: 20px;
+	font-size: 30px;
 	cursor: pointer;
 	position: relative;
 	left: 50px;
 }
-.game-over span:hover {
-	color: #FFD700;
+
+.game-win span {
+	font-size: 30px;
 }
+
 .loading,
 .opening {
 	position: absolute;
 	top:300px;
-	left: calc(50% - 30px);
-	color: blue;
+	left: calc(50% - 80px);
+	color: #0052A5;
 	font-size: 50px;
-
 }
 
 .opening {
 	display: none;
 }
+
+span:hover {
+	color:#E0162B;
+}
+
+.instructions {
+	color: #0052A5;
+	font-size: 30px;
+	position: absolute;
+	top: 630px;
+	left: calc(50% - 180px);
+	text-transform: none;
+}
+.buttons {
+   border-top: 1px solid #96d1f8;
+   background: #0052A5;
+   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+   padding: 12px 24px;
+   border-radius: 10px;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: white;
+   font-size: 18px;
+   text-decoration: none;
+   vertical-align: middle;
+}
+
+h2 {
+	text-transform: uppercase;
+}
+
+@media screen and (max-width: 960px) {
+	.instructions {
+		top: 680px;
+	}
+}
+
 

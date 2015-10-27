@@ -49,35 +49,20 @@ var Enemy = function() {
     this.Xspeed = 40 + Math.random() * 40;
     this.Yspeed = 40 + Math.random() * 40;
     this.sprite = 'images/christiespriteboard.png';
-    this.justSpewed = false;
-    this.spewCounter = 0;
     this.frameIndex = 0;
 };
 
 Enemy.prototype.update = function(dt) {
     this.y += this.Yspeed * dt;
     this.x += this.Xspeed * dt;
-    if (Math.random() > 0.995 && this.inUse && !this.justSpewed) {
+    if (Math.random() > 0.995 && this.inUse) {
         this.spew();
-        this.justSpewed = true;
-        this.spewCounter = 0;
-
-       // this.sprite = 'images/christiemad.jpg';
     }
     if (this.y >= game.CANVAS_HEIGHT - this.height || this.y <= 0) {
         this.Yspeed = -this.Yspeed;
     }
     if (this.x >= game.CANVAS_WIDTH - this.width || this.x < 360 ) {
         this.Xspeed = -this.Xspeed;
-    }
-
-    if (this.justSpewed) {
-        this.spewCounter += 40 * dt ;
-
-    }
-    if (this.spewCounter >= 10) {
-       // this.sprite = 'images/christie.jpg';
-        this.justSpewed = false;
     }
 };
 
@@ -120,7 +105,7 @@ Enemy.prototype.checkCollision = function() {
 };
 
 Enemy.prototype.isColliding = function(array,i) {
-        if (this.x < array[i].x + 3  && this.x + this.width  > array[i].x && this.y < array[i].y + 4 && this.y + this.height > array[i].y) {
+        if (this.x < array[i].x + 8  && this.x + this.width  > array[i].x && this.y < array[i].y + 8 && this.y + this.height > array[i].y) {
             return true;
         }
 };
@@ -163,7 +148,7 @@ Player.prototype.update = function(dt) {
 };
 
 Player.prototype.isColliding = function(array,i) {
-    if (this.x < array[i].x + 3  && this.x + this.width  > array[i].x && this.y <array[i].y + 4 && this.y + this.height > array[i].y) {
+    if (this.x < array[i].x + 4  && this.x + this.width  > array[i].x && this.y <array[i].y + 4 && this.y + this.height > array[i].y) {
         return true;
     }
 };
