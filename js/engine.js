@@ -4,13 +4,9 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-    canvas.width = game.CANVAS_WIDTH = 700; //also set game attributes in this line
+    canvas.width = game.CANVAS_WIDTH = 700; //also set game attributes in these 2 lines
     canvas.height = game.CANVAS_HEIGHT = 560;
     doc.body.appendChild(canvas);
-
-    /*Init game on click of #play
-    *instead of init call */
-
 
     doc.getElementById('play').onclick = init; //init game onclick (after load)
 
@@ -18,7 +14,7 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        if (evilArmy.poolStatus()) {
+        if (evilArmy.poolStatus()) { //checks when all enemies are killed
             game.win = true;
         }
 
@@ -49,8 +45,8 @@ var Engine = (function(global) {
 
     function update(dt) {
         updateEntities(dt);
-        updateBackground(dt);  //********Call to update Background function
-        updateBullets(dt); //***Call to update bullet function
+        updateBackground(dt);
+        updateBullets(dt);
         player.checkCollision();
         updateExplosion(dt);
     }
@@ -59,17 +55,20 @@ var Engine = (function(global) {
         evilArmy.array.forEach(function(enemy) {
             enemy.update(dt);
             enemy.checkCollision();
+            enemy.checkPlayerCollision();
         });
         player.update();
     }
 
-    function updateBackground(dt) {    //********New update Background function
+    //calls instantiated background objects
+    function updateBackground(dt) {
         cloudsBackground.update(dt);
         monumentsBackground.update(dt);
         grassBackground.update(dt);
     }
 
-    function updateBullets(dt) {    //********New update Bullets function
+    //updates enemy and player bullets
+    function updateBullets(dt) {
         player.magazine.array.forEach(function(bullet) {
             bullet.update(dt);
         });
@@ -95,15 +94,19 @@ var Engine = (function(global) {
     function renderEntities() {
         renderEnemies();
         player.render();
+        player.renderLifeStatus();
+        if (game.over) {
+            player.renderGameOver();
+        }
     }
 
-    function renderBackground() {  //***New Background Render function
+    function renderBackground() {
         cloudsBackground.render();
         monumentsBackground.render();
         grassBackground.render();
     }
 
-    function renderBullets() {  //**A Call to arms (get it?)
+    function renderBullets() {  //A Call to arms ;)
         player.magazine.arm();
         enemyMagazine.arm();
     }
@@ -130,6 +133,7 @@ var Engine = (function(global) {
         doc.getElementById('game-over').style.display = "block";
     }
 
+    //upon win, runs explosions across screen and plays win sound
     function gameWin() {
         sounds.background.pause();
         sounds.gameWin.play();

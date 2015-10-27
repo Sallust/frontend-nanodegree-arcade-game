@@ -93,18 +93,8 @@
         return ready;
     }
 
-    /* This function will add a function to the callback stack that is called
-     * when all requested images are properly loaded.
-     */
-    //function onReady(func) {
-       // readyCallbacks.push(func);
-    //}
-
-    /**
-    * @description Checks ready state of audio after images have been loaded
-    * @constructor
-    * @param {string} title - The title of the book
-    * @param {string} author - The author of the book
+    /**Called when images finished loading
+    * checks state of largest audio file, apprentice theme song
     */
 
     function checkAudioReadyState() {
