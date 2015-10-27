@@ -202,20 +202,20 @@ Player.prototype.renderLifeStatus = function () {
     for (var i = 0; i < game.lives; i++) {
         ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50);
     }
-}
+};
 
 //spins player crazily when game.over
 Player.prototype.renderGameOver= function () {
     ctx.save();
         ctx.translate(this.x,this.y);
         ctx.rotate(this.rotation);
-        this.rotation -= 0.05
+        this.rotation -= 0.05;
         ctx.drawImage(Resources.get(this.sprite), 0, 0, 150, 84, -140/2, -84/2, 140, 84);
         ctx.restore();
         for (var i = 0; i < 7; i ++) {
             fancyExplosion(200 * Math.random(), 150 + 200 * Math.random());
         }
-}
+};
 
 Player.prototype.handleInput = function(input){
     if (input == 'left' && this.x > 0)
@@ -423,7 +423,7 @@ var Sounds = function() {
     this.explosionPool = new SoundPool(15, 'sounds/explosion.wav', 0.2);
     this.terminationPool = new SoundPool(8, 'sounds/youre_fired.wav',1);
 
-    this.gameOver = new Audio('sounds/disaster.wav')
+    this.gameOver = new Audio('sounds/disaster.wav');
     this.gameOver.volume = 0.6;
     this.gameWin = new Audio('sounds/americagreat.wav');
     this.gameWin.volume = 1;
