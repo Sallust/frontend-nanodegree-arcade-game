@@ -30,7 +30,7 @@ var Engine = (function(global) {
             gameWin();
         }
 
-        if (!game.paused && !game.over) {
+        if (!game.paused) {
             update(dt);
             render();
         }
@@ -126,11 +126,13 @@ var Engine = (function(global) {
 
     function gameOver() {
         sounds.background.pause();
+        sounds.gameOver.play();
         doc.getElementById('game-over').style.display = "block";
     }
 
     function gameWin() {
         sounds.background.pause();
+        sounds.gameWin.play();
         doc.getElementById('game-win').style.display = "block";
         for (var i = 0; i < 11; i ++) {
             fancyExplosion(Math.random() * game.CANVAS_WIDTH, Math.random() * game.CANVAS_HEIGHT);

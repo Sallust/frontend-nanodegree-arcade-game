@@ -8,7 +8,7 @@ function inherit(subClass,superClass) {
 //global variables
 var Game = function() {
     this.score = 0;
-    this.lives = 7;
+    this.lives = 3;
     this.paused = false;
     this.over = false;
     this.win = false;
@@ -35,6 +35,8 @@ Game.prototype.restart = function(){
     document.getElementById('game-over').style.display = "none";
     document.getElementById('game-win').style.display = "none";
     sounds.background.play();
+    sounds.gameOver.pause();
+    sounds.gameWin.pause();
     this.over = false;
     this.win = false;
 };
@@ -134,6 +136,7 @@ var Player = function(){
     this.magazine = new Pool(20);   //max bullets set to 20 here
     this.magazine.init(TruthBullet);
     this.frameIndex = 0;
+    this.rotation = 0;
 };
 
 Player.prototype.update = function(dt) {
@@ -145,13 +148,19 @@ Player.prototype.update = function(dt) {
         if (this.isColliding(enemyMagazine.array,i)) {
             fancyExplosion(this.x + 180,this.y + 75);
             sounds.explosionPool.get();
-            this.start();
+            //this.start();
             enemyMagazine.array[i].clear(); //collided bullet gets cleared
             game.lives -= 1;
             if (game.lives === 0) {
                 game.over = true;
             }
         }
+    }
+    //var test = 0;
+    if (game.over) {
+        this.x = 150; //Math.sin(test)
+        this.y = game.CANVAS_HEIGHT/2;
+        //test += 0.02;
     }
 };
 
@@ -166,10 +175,27 @@ Player.prototype.render = function() {
     if (this.frameIndex >= 4) {
             this.frameIndex = 0;
         }
-    ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 171, 93);
+        if (!game.over) {
+             ctx.drawImage(Resources.get(this.sprite), 0, Math.floor(this.frameIndex) * 140, 256, 140, this.x, this.y, 171, 93);
     this.frameIndex += 1/2;
+        }
+
     for (var i = 0; i < game.lives; i++) {
         ctx.drawImage(Resources.get(this.lifeSprite), 5 + i * 55 , game.CANVAS_HEIGHT - 55, 50, 50);
+    }
+    if (game.over) {
+        ctx.save();
+        ctx.translate(this.x,this.y);
+        ctx.rotate(this.rotation);
+        this.rotation -= 0.05
+        ctx.drawImage(Resources.get(this.sprite), 0, 0, 256, 140, -171/2, -93/2, 171, 93);
+        //fancyExplosion(this.x -171/2 ,this.y - 93/2);
+        //fancyExplosion(this.x + 171/2, this.y +93/2);
+        ctx.restore();
+        for (var i = 0; i < 7; i ++) {
+            fancyExplosion(200 * Math.random(), 150 + 200 * Math.random());
+        }
+
     }
 };
 
@@ -330,23 +356,30 @@ LiesBullet.prototype.update = function(dt){
 };
 
 var Sounds = function() { //not really a superclass but organized code logically
-    this.laserPool = new SoundPool(10,'sounds/laser.wav');    //number of laser sounds
-    this.explosionPool = new SoundPool(15, 'sounds/explosion.wav');   //# of explosion sounds
-    this.terminationPool = new SoundPool(8, 'sounds/youre_fired.wav');
+    this.laserPool = new SoundPool(10,'sounds/laser.wav', 0.5);    //number of laser sounds
+    this.explosionPool = new SoundPool(15, 'sounds/explosion.wav', 0.2);   //# of explosion sounds
+    this.terminationPool = new SoundPool(8, 'sounds/youre_fired.wav',1);
+    this.gameOver = new Audio('sounds/disaster.wav')
+    this.gameOver.volume = 0.6;
 
-    this.background = new Audio('sounds/kick_shock.wav');
-    this.background.volume = 0.09;
+    this.gameWin = new Audio('sounds/americagreat.wav');
+    this.gameWin.volume = 1;
+
+
+    this.background = new Audio('sounds/apprenticetheme.mp3');
+    this.background.volume = 0.1;
     this.background.loop = true;
     this.background.load();
 };
 
-var SoundPool = function(maxElements, soundSrc){
+var SoundPool = function(maxElements, soundSrc, volume){
     this.array = [];
     //this.cap = maxElements;
     this.selected = 0; //selected = index value of currently playing sound
     for (var i = 0; i < maxElements; i++) {
         var sound = new Audio(soundSrc);
         sound.load();
+        sound.volume = volume;
         this.array[i] = sound;
     }
 };
