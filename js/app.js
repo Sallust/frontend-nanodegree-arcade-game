@@ -1,3 +1,5 @@
+'use strict';
+
 function inherit(subClass,superClass) {
    subClass.prototype = Object.create(superClass.prototype);
    subClass.prototype.constructor = subClass;
@@ -6,7 +8,7 @@ function inherit(subClass,superClass) {
 //game attributes variables
 var Game = function() {
     this.score = 0;
-    this.lives = 3;
+    this.lives = 5;
     this.paused = false;
     this.over = false;
     this.win = false;
