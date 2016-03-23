@@ -5,29 +5,27 @@
 
 ## How to play!
 
-*Help Donald Trump eliminate his rival republican candidates
+*	Help Donald Trump eliminate his rival republican candidates
 
-*Click play!
+*	Click play!
 
-*Avoid the red stars that enemies shoot
+*	Avoid the red stars that enemies shoot
 
-*Move using the arrow keys
+*	Move using the arrow keys
 
-*Hit Space to shoot a magical apprentice style briefcase at your enemies
+*	Hit Space to shoot a magical apprentice style briefcase at your enemies
 
-*Hit P to pause the game
+*	Hit P to pause the game
 
-*To restart game click "Restart" on screen
+*	To restart game click "Restart" on screen
 
-*Enjoy!
-
+*	Enjoy!
 
 ## Instructions for playing locally
 
-*clone this repository
+*	clone this repository
 
-*open index.html
-
+*	open index.html
 
 ## HTML5 Canvas Game - The Donald Takes Over -  Features
 
@@ -40,5 +38,5 @@
 * this project was completed as part of the [Front-End Web Development Nanodegree at Udacity](https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001)
 
 ### My info
-	* Daniyom Haile
-	* daniyom@gmail.com
+* Daniyom Haile
+* daniyom@gmail.com
